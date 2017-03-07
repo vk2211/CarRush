@@ -2,6 +2,7 @@ package com.exam.carrush.control;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -141,10 +142,32 @@ public class Client {
 			;
 	}
 
+	// 左转45
+	public void left45() {
+		MAJOR = 0x08;
+		FIRST = (byte) (80 & 0xFF);
+		SECOND = 0x00;
+		THRID = 0x00;
+		send();
+		while (mbyte[2] != 2)
+			;
+	}
+
 	// 右转
 	public void right(int sp_n) {
 		MAJOR = 0x05;
 		FIRST = (byte) (sp_n & 0xFF);
+		SECOND = 0x00;
+		THRID = 0x00;
+		send();
+		while (mbyte[2] != 2)
+			;
+	}
+
+	// 右转
+	public void right45() {
+		MAJOR = 0x09;
+		FIRST = (byte) (80 & 0xFF);
 		SECOND = 0x00;
 		THRID = 0x00;
 		send();
@@ -451,9 +474,12 @@ public class Client {
 	// 延迟
 	public void rest(int time) {
 		try {
-			Thread.sleep(time);
+			for (int i = 0; i < 1; i++) {
+				Thread.sleep(time);
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			Log.e("###### error", e.toString());
 		}
 	}
 }
