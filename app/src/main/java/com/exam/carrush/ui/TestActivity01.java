@@ -1,11 +1,16 @@
 package com.exam.carrush.ui;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.exam.carrush.R;
+import com.exam.carrush.service.FileService;
 import com.exam.carrush.tools.PictureReconizer;
 
 public class TestActivity01 extends AppCompatActivity {
@@ -28,6 +34,9 @@ public class TestActivity01 extends AppCompatActivity {
 	private PictureReconizer mPictureReccognizer;
 	private Bitmap bitmap;
 	private TextView te_result;
+	//调用系统相册-选择图片
+	private static final int IMAGE = 1;
+	private String ImagePath=null;
 
 
 	private Handler mHandler = new Handler() {
@@ -54,9 +63,11 @@ public class TestActivity01 extends AppCompatActivity {
 		mInputET = (EditText) findViewById(R.id.inputet);
 		te_result = (TextView) findViewById(R.id.te_result);
 
+
 		mPictureReccognizer = new PictureReconizer(TestActivity01.this);
 
 		bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pic1);
+
 		mImage_REC.setImageBitmap(bitmap);
 
 		mBt_REC.setOnClickListener(new View.OnClickListener() {
@@ -101,17 +112,48 @@ public class TestActivity01 extends AppCompatActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-
-
-			Intent intent = new Intent();
-			intent.setClass(TestActivity01.this, FragmentActivity.class);
+		switch (item.getItemId()){
+		case R.id.action_settings:
+			Intent intent=new Intent();
+			intent.setClass(TestActivity01.this,FragmentActivity.class);
 			startActivity(intent);
 
-			return true;
+			break;
+		case R.id.pick_picture01:
+			//调用相册
+			Intent intentPicture = new Intent(Intent.ACTION_PICK,
+				android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			startActivityForResult(intentPicture, IMAGE);
+
+			break;
 		}
 
 		return super.onOptionsItemSelected(item);
 	}
+
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		//获取图片路径
+		if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+			Uri selectedImage = data.getData();
+			String[] filePathColumns = {MediaStore.Images.Media.DATA};
+			Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
+			c.moveToFirst();
+			int columnIndex = c.getColumnIndex(filePathColumns[0]);
+			ImagePath = c.getString(columnIndex);
+			showImage(ImagePath);
+			c.close();
+		}
+	}
+
+	//加载图片
+	private void showImage(String imaePath){
+		bitmap = BitmapFactory.decodeFile(imaePath);
+		mImage_REC.setImageBitmap(bitmap);
+
+	}
+
 }

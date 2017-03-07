@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.exam.carrush.R;
+import com.exam.carrush.service.FileService;
 import com.exam.carrush.tools.color.colorbean.IdentyColor;
 import com.jude.easyrecyclerview.EasyRecyclerView;
 
@@ -29,8 +31,11 @@ public class MainFragment extends Fragment {
 	private EasyRecyclerView mColorSettingList;
 	private Bitmap mShotBitmap;
 	private Button bt_save;
-
 	private List<IdentyColor> mList;
+
+
+
+
 
 
 	@Nullable
@@ -40,7 +45,6 @@ public class MainFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_main, container, false);
 		mConfigImageView = (TouchImageView) view.findViewById(R.id.configImage);
 		mColorSettingList = (EasyRecyclerView) view.findViewById(R.id.colorSettingList);
-
 		mRgbText = (TextView) view.findViewById(R.id.rgbText);
 		bt_save = (Button) view.findViewById(R.id.save);
 		bt_save.setOnClickListener(saveRGBOnclickListener);
@@ -63,10 +67,18 @@ public class MainFragment extends Fragment {
 		mColorSettingAdapter.addAll(mList);
 		mColorSettingList.setAdapter(mColorSettingAdapter);
 
+
+
+
 		return view;
 
 	}
 
+
+
+	public TouchImageView getmConfigImageView() {
+		return mConfigImageView;
+	}
 	/**
 	 * 保存RGB的值
 	 */

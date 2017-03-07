@@ -1,15 +1,25 @@
 package com.exam.carrush.ui;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.exam.carrush.R;
 import com.exam.carrush.tools.color.fragment.DiscoverFragment;
 import com.exam.carrush.tools.color.fragment.MainFragment;
 import com.exam.carrush.tools.color.fragment.MyFragment;
+import com.exam.carrush.tools.color.fragment.TouchImageView;
 
 public class FragmentActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener {
 
@@ -19,6 +29,11 @@ public class FragmentActivity extends AppCompatActivity implements RadioGroup.On
 
 	private MyFragment mMyFragment;
 	private MainFragment mMainFragment;
+	private String Imagepath;
+
+
+
+
 
 
 	@Override
@@ -28,6 +43,7 @@ public class FragmentActivity extends AppCompatActivity implements RadioGroup.On
 		mRadioGroup = (RadioGroup) findViewById(R.id.radiogroup);
 		mRadioGroup.setOnCheckedChangeListener(FragmentActivity.this);
 		onCheckedChanged(mRadioGroup, R.id.first);
+
 	}
 
 	@Override
@@ -36,17 +52,12 @@ public class FragmentActivity extends AppCompatActivity implements RadioGroup.On
 		// 开启Fragment事务
 		FragmentTransaction transaction = fm.beginTransaction();
 
-		/**
-		 1、为什么需要判null呢？
-		 主要是因为，当Activity因为配置发生改变（屏幕旋转）或者内存不足被系统杀死，造成重新创建时，
-		 我们的fragment会被保存下来，但是会创建新的FragmentManager，
-		 新的FragmentManager会首先会去获取保存下来的fragment队列，
-		 重建fragment队列，从而恢复之前的状态。
-		 */
 		switch (i) {
 		case R.id.first:
 			if (mMainFragment == null) {
 				mMainFragment = new MainFragment();
+
+
 			}
 			// 使用当前Fragment的布局替代id_content的控件
 			transaction.replace(R.id.frameLayout_mian, mMainFragment);
@@ -69,6 +80,7 @@ public class FragmentActivity extends AppCompatActivity implements RadioGroup.On
 		transaction.commit();
 
 	}
+
 
 
 }

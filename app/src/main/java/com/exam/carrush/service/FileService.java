@@ -12,6 +12,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class FileService {
+
+	private Bitmap bitmap;
+
+
+	public Bitmap getBitmap() {
+		return bitmap;
+	}
+
+	public void setBitmap(Bitmap bitmap) {
+		this.bitmap = bitmap;
+	}
+
 	/**
 	 * 保存文件
 	 *

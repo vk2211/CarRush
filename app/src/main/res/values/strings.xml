@@ -1,6 +1,6 @@
 <resources>
 	<string name="app_name">ColorShape</string>
-	<string name="action_settings">Settings</string>
+	<string name="action_settings">RGB配置</string>
 	<string name="main_page_rb">图形配置</string>
 	<string name="discover_page_rb">分割测试</string>
 	<string name="my_page_rb">保留</string>
@@ -9,6 +9,7 @@
 	<string name="reset">重置</string>
 	<string name="savedata">保存</string>
 	<string name="inputtext">颜色和形状</string>
+	<string name="pick_picture">选择图片</string>
 
 
 
