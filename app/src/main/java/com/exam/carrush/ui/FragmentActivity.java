@@ -31,11 +31,6 @@ public class FragmentActivity extends AppCompatActivity implements RadioGroup.On
 	private MainFragment mMainFragment;
 	private String Imagepath;
 
-
-
-
-
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

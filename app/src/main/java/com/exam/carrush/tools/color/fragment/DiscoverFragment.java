@@ -67,7 +67,7 @@ public class DiscoverFragment extends Fragment {
 		mCutBitmapSetingList.setLayoutManager(m);
 		mPictureReconizer = new PictureReconizer(getContext());
 		setImage = (ImageView) view.findViewById(R.id.setImage);
-		bmp = BitmapFactory.decodeResource(getResources(), R.drawable.pic1);
+		bmp = BitmapFactory.decodeResource(getResources(), R.drawable.pic2);
 		mList = new ArrayList<ColorCutBitmap>();
 
 		mEditText = (EditText) view.findViewById(R.id.colorEdit);
@@ -84,9 +84,9 @@ public class DiscoverFragment extends Fragment {
 						int num = mPictureReconizer.palseColor(mEditText.getText().toString());
 						Log.e("###########num ", String.valueOf(num));
 						IdentyColor identyColor = new IdentyColor(getContext());
-						// Bitmap bitmap= mPictureReconizer.convertToBlack(bmp,identyColor,num);
+						 Bitmap bitmap= mPictureReconizer.convertToBlack(bmp,identyColor,num);
 
-						mPictureReconizer.shape_first_Division(bmp, true, identyColor, num);
+						mPictureReconizer.shape_first_Division(bitmap, true, identyColor, num);
 						List<Bitmap> list = mPictureReconizer.shape_second_Division(mPictureReconizer.getmBitmapList(), identyColor, num);
 						Message message = new Message();
 						message.obj = list;

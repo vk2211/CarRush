@@ -66,7 +66,7 @@ public class TestActivity01 extends AppCompatActivity {
 
 		mPictureReccognizer = new PictureReconizer(TestActivity01.this);
 
-		bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pic1);
+		bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pic2);
 
 		mImage_REC.setImageBitmap(bitmap);
 

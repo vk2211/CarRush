@@ -52,10 +52,13 @@ public class PictureReconizer {
 		IdentyColor identyColor = new IdentyColor(mContext);//创建颜色对象
 
 		if (identyColor.setRgb(num[0])) {
-			//bitmap=convertToBlack(bmp,identyColor,num[0]);  //过滤背景
-			shape_first_Division(bmp, true, identyColor, num[0]);//第一次形状分割
+			bitmap=convertToBlack(bmp,identyColor,num[0]);  //过滤背景
+			shape_first_Division(bitmap, true, identyColor, num[0]);//第一次形状分割
 			shape_second_Division(mBitmapList, identyColor, num[0]);//第二次形状分割
-			numbershape = getnumOfshape(mResultList, identyColor, num[0], num[1]);  //进行识别
+			//numbershape = getnumOfshape(mResultList, identyColor, num[0], num[1]);  //进行识别
+
+			numbershape=GetnumberOfshape(mResultList,identyColor,num[0],num[1]);
+
 		} else {
 			Toast.makeText(mContext, "请配置RGB", Toast.LENGTH_SHORT).show();
 		}
@@ -70,6 +73,52 @@ public class PictureReconizer {
 	public List<Bitmap> getmBitmapList() {
 		return mBitmapList;
 	}
+
+
+
+
+	public int  GetnumberOfshape(List<Bitmap> list,IdentyColor identyColor,int colornum,int shapenum){
+
+		triaNum = 0;
+		rectNum = 0;
+		circNum = 0;
+
+
+		for(int i=0;i<list.size();i++){
+
+			ArrayList<Coordinates> listcolor=getListOf_Coordinates(list.get(i),identyColor,colornum);
+
+			Log.e("###########list size ",String.valueOf(listcolor.size()));
+			if(listcolor.size()>=13000&&listcolor.size()<17000){
+
+				circNum++;
+			}
+			else if(listcolor.size()>=17000){
+
+				rectNum++;
+			}
+			else if(listcolor.size()<13000){
+
+				triaNum++;
+			}
+
+		}
+		if (shapenum == 0) {
+
+			return triaNum;
+		} else if (shapenum == 1) {
+			return circNum;
+		} else {
+			return rectNum;
+		}
+
+
+
+	}
+
+
+
+
 
 	public int getnumOfshape(List<Bitmap> list, IdentyColor identyColor, int colornum, int shapenum) {
 

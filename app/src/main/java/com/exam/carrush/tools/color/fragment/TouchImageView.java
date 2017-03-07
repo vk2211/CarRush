@@ -64,7 +64,7 @@ public class TouchImageView extends ImageView {
 	}
 
 	private void init(Context context) {
-		gintama = BitmapFactory.decodeResource(getResources(), R.drawable.pic1);
+		gintama = BitmapFactory.decodeResource(getResources(), R.drawable.pic2);
 		widthScreen = ScreenUtil.getScreenWidth();
 		heightScreen = ScreenUtil.getScreenHeight();
 		matrix = new Matrix();

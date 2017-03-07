@@ -66,6 +66,7 @@ public class MainFragment extends Fragment {
 
 		mColorSettingAdapter.addAll(mList);
 		mColorSettingList.setAdapter(mColorSettingAdapter);
+		mConfigImageView.setImageResource(R.drawable.pic2);
 
 
 

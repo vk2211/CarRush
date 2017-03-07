@@ -4,11 +4,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-   <ImageView
-       android:layout_width="match_parent"
-       android:layout_height="250dp"
-       android:src="@drawable/pic1"
-       android:id="@+id/setImage"/>
+    <ImageView
+		android:layout_width="match_parent"
+		android:layout_height="250dp"
+		android:src="@drawable/pic2"
+		android:id="@+id/setImage"/>
 
     <com.jude.easyrecyclerview.EasyRecyclerView
         android:id="@+id/colorCutList"

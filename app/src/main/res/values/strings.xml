@@ -1,5 +1,5 @@
 <resources>
-	<string name="app_name">ColorShape</string>
+	<string name="app_name">CarRush</string>
 	<string name="action_settings">RGB配置</string>
 	<string name="main_page_rb">图形配置</string>
 	<string name="discover_page_rb">分割测试</string>

@@ -12,7 +12,7 @@
 		android:layout_height="600dp"
 		android:layout_gravity="center"
 		android:gravity="center"
-		android:src="@drawable/pic1"/>
+		android:src="@drawable/pic2"/>
 
 	<Button
 		android:id="@+id/save"
