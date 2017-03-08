@@ -49,13 +49,12 @@ public class CarModel {
 		/* 9 */{ 0x00, 0x00, 0x22, 0x00, 0x22, 0x00, 0x22, 0x00, 0x22, 0x00, 0x22, 0x00, 0x00 },
 		/* X */{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
 	};
+	private boolean mIsHeadOnPoint = true;
 	private Point mCurrentPos;
 	private int mCurrentHeading;
 	private CarMovementListener mCarMovementListener;
 
 	public interface CarMovementListener {
-		void onPrepare();
-
 		void onTurn(int direction, int angle);
 
 		void onGoToNextCross();
@@ -63,12 +62,6 @@ public class CarModel {
 		void onGoBack();
 
 		void onReach(int x, int y);
-
-		void onEnd();
-	}
-
-	public void prepare() {
-		mCarMovementListener.onPrepare();
 	}
 
 	public CarModel(int startX, int startY, int heading, CarMovementListener listener) {
@@ -126,13 +119,17 @@ public class CarModel {
 		if (mCurrentHeading == to) {
 			return;
 		}
+		int angle = 90;
+		if (!mIsHeadOnPoint) {
+			angle = 0;
+		}
 		if (mCurrentHeading == T) {
 			switch (to) {
 			case L:
-				mCarMovementListener.onTurn(L, 90);
+				mCarMovementListener.onTurn(L, angle);
 				break;
 			case R:
-				mCarMovementListener.onTurn(R, 90);
+				mCarMovementListener.onTurn(R, angle);
 				break;
 			case T:
 				break;
@@ -143,15 +140,15 @@ public class CarModel {
 		} else if (mCurrentHeading == R) {
 			switch (to) {
 			case L:
-				mCarMovementListener.onTurn(L, 180);
+				mCarMovementListener.onTurn(L, angle);
 				break;
 			case R:
 				break;
 			case T:
-				mCarMovementListener.onTurn(L, 90);
+				mCarMovementListener.onTurn(L, angle);
 				break;
 			case B:
-				mCarMovementListener.onTurn(R, 90);
+				mCarMovementListener.onTurn(R, angle);
 				break;
 			}
 		} else if (mCurrentHeading == L) {
@@ -162,19 +159,19 @@ public class CarModel {
 				mCarMovementListener.onTurn(L, 180);
 				break;
 			case T:
-				mCarMovementListener.onTurn(R, 90);
+				mCarMovementListener.onTurn(R, angle);
 				break;
 			case B:
-				mCarMovementListener.onTurn(L, 90);
+				mCarMovementListener.onTurn(L, angle);
 				break;
 			}
 		} else if (mCurrentHeading == B) {
 			switch (to) {
 			case L:
-				mCarMovementListener.onTurn(R, 90);
+				mCarMovementListener.onTurn(R, angle);
 				break;
 			case R:
-				mCarMovementListener.onTurn(L, 90);
+				mCarMovementListener.onTurn(L, angle);
 				break;
 			case T:
 				mCarMovementListener.onTurn(L, 180);
@@ -184,6 +181,7 @@ public class CarModel {
 			}
 		}
 		mCurrentHeading = to;
+		mIsHeadOnPoint = false;
 	}
 
 	private void runRoad(int fromMainX, int fromMainY, int toMainX, int toMainY, int step) {
@@ -279,6 +277,7 @@ public class CarModel {
 		}
 		mCurrentPos.x = toMainX;
 		mCurrentPos.y = toMainY;
+		mIsHeadOnPoint = true;
 	}
 
 	public void back() {
@@ -292,6 +291,7 @@ public class CarModel {
 			mCurrentPos.x--;
 		}
 		mCarMovementListener.onGoBack();
+		mIsHeadOnPoint = false;
 	}
 
 	private void run(int fromx, int fromy, int tox, int toy) {

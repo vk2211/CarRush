@@ -612,7 +612,7 @@ public class CarActivity extends Activity {
 	public Handler phHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			if (msg.what == 10) {
-				image.setImageBitmap(bitmap);
+				image.setImageBitmap(phThread.bitmap);
 			}
 			if (msg.what == 15) {
 				Toast.makeText(getBaseContext(), result.toString(), Toast.LENGTH_SHORT).show();

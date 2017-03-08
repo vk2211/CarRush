@@ -40,12 +40,7 @@ public class AutoRun {
 	}
 
 	public AutoRun() {
-		mCarModel = new CarModel(2, 8, 0, mCarMovementListener = new CarMovementListener() {
-			@Override
-			public void onPrepare() {
-				// TODO Auto-generated method stub
-			}
-
+		mCarModel = new CarModel(8, 2, 0, mCarMovementListener = new CarMovementListener() {
 			@Override
 			public void onTurn(int direction, int angle) {
 				int sp = 1;
@@ -58,17 +53,23 @@ public class AutoRun {
 //				mCarClient.rest(SLEEP);
 				switch (direction) {
 					case CarModel.L: {
-						if (sp == 1) mCarClient.goLeft(0);
-						if (sp == 2) mCarClient.head();
-//						mCarClient.left(80);
+						if (angle == 0) {
+							mCarClient.left(80);
+						} else {
+							if (sp == 1) mCarClient.goLeft(0);
+							if (sp == 2) mCarClient.head();
+						}
 					}
 					break;
 					case CarModel.T:
 						break;
 					case CarModel.R: {
-						if (sp == 1) mCarClient.goRight(0);
-						if (sp == 2) mCarClient.head();
-						mCarClient.right(80);
+						if (angle == 0) {
+							mCarClient.right(80);
+						} else {
+							if (sp == 1) mCarClient.goRight(0);
+							if (sp == 2) mCarClient.head();
+						}
 					}
 					break;
 					case CarModel.B:
@@ -83,25 +84,16 @@ public class AutoRun {
 			}
 
 			@Override
+			public void onReach(int x, int y) {
+
+			}
+
+			@Override
 			public void onGoToNextCross() {
 				mCarClient.go(80, 80);
 //				mCarClient.rest(SLEEP);
 				mCarClient.line(80);
 //				mCarClient.rest(SLEEP);
-			}
-
-			@Override
-			public void onReach(int x, int y) {
-				if (x == 2 && y == 8) {
-					// QRCode
-				} else {
-				}
-			}
-
-			@Override
-			public void onEnd() {
-				// TODO Auto-generated method stub
-
 			}
 		});
 	}
@@ -133,7 +125,7 @@ public class AutoRun {
 			//隧道任务或报警器任务
 			new TunnelTask().excute();
 			//主从控制从车任务 ***计算出从车的的位置并让从车行驶到该位置***
-			new MasterSlaveTask().excute();
+			new SlaveTask().excute();
 //			//立体显示任务 ***识别的车牌信息和从车的位置在立体显示上显示***
 //			new HoloTask().excute();
 //			//交通灯识别任务 ***识别当前信息并执行***
@@ -371,7 +363,7 @@ public class AutoRun {
 		}
 	}
 	//主车控制从车任务
-	class OtherCarTask extends Task {
+	class SlaveTask extends Task {
 		CarModel mOtherCar;
 
 		@Override
