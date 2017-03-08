@@ -71,19 +71,23 @@ public class CarModel {
 		mCarMovementListener.onPrepare();
 	}
 
-	public CarModel(int startX, int startY, CarMovementListener listener) {
+	public CarModel(int startX, int startY, int heading, CarMovementListener listener) {
 		mCurrentPos = new Point(startX, startY);
-		if (startX <= TE) {
-			mCurrentHeading = B;
-		}
-		if (startX >= BE) {
-			mCurrentHeading = T;
-		}
-		if (startY <= LE) {
-			mCurrentHeading = R;
-		}
-		if (startY >= RE) {
-			mCurrentHeading = L;
+		if (heading == 0) {
+			if (startX <= TE) {
+				mCurrentHeading = B;
+			}
+			if (startX >= BE) {
+				mCurrentHeading = T;
+			}
+			if (startY <= LE) {
+				mCurrentHeading = R;
+			}
+			if (startY >= RE) {
+				mCurrentHeading = L;
+			}
+		} else {
+			mCurrentHeading = heading;
 		}
 		mCarMovementListener = listener;
 	}

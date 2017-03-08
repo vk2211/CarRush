@@ -1,5 +1,6 @@
 package com.exam.carrush.ui;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -17,7 +18,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StrictMode;
-import android.support.v7.app.AppCompatActivity;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -37,6 +37,7 @@ import com.exam.carrush.Global;
 import com.exam.carrush.R;
 import com.exam.carrush.control.AutoClient;
 import com.exam.carrush.control.AutoRun;
+import com.exam.carrush.control.CameraThread;
 import com.exam.carrush.service.FileService;
 import com.exam.carrush.service.SearchService;
 import com.exam.carrush.tools.RGBLuminanceSource;
@@ -55,16 +56,15 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class CarActivity extends AppCompatActivity {
+public class CarActivity extends Activity {
 
 	//车牌识别调用类
-	private String m06;
 	private ImageFileRecognizeTask myRecognizer;
 	private RecognizeTask.OnReconizeListener onReconizeListener = new RecognizeTask.OnReconizeListener() {
 		@Override
 		public void onRecognizeResult(String result) {
 			Toast.makeText(getBaseContext(), result.toString(), Toast.LENGTH_SHORT).show();
-			m06 = result;
+			Global.M06 = result;
 		}
 	};
 	// 小车控制界面
@@ -114,6 +114,7 @@ public class CarActivity extends AppCompatActivity {
 			IP = arg1.getStringExtra("IP");
 			Log.e("IP地址", IP);
 			progressDialog.dismiss();
+			phThread = new CameraThread(phHandler, IP);
 			phThread.start();
 
 		}
@@ -263,15 +264,17 @@ public class CarActivity extends AppCompatActivity {
 
 	private Bitmap bitmap = null;
 	// 开启线程接受摄像头当前图片
-	private Thread phThread = new Thread(new Runnable() {
+	private CameraThread phThread;// = new CameraThread(phHandler, IP);
+//	private Thread phThread = new Thread(new Runnable() {
+//
+//		public void run() {
+//			while (true) {
+//				bitmap = cameraCommandUtil.httpForImage(IP);
+//				phHandler.sendEmptyMessage(10);
+//			}
+//		}
+//	});
 
-		public void run() {
-			while (true) {
-				bitmap = cameraCommandUtil.httpForImage(IP);
-				phHandler.sendEmptyMessage(10);
-			}
-		}
-	});
 
 	// 接受传感器
 	private Handler car_myHandler = new Handler() {
@@ -301,113 +304,10 @@ public class CarActivity extends AppCompatActivity {
 		}
 	};
 
-	// 图片，结果处理线程
-	public Handler phHandler = new Handler() {
-		public void handleMessage(Message msg) {
-			if (msg.what == 10) {
-				image.setImageBitmap(bitmap);
-
-			}
-			if (msg.what == 15) {
-				Toast.makeText(getBaseContext(), result.toString(), Toast.LENGTH_SHORT).show();
-			}
-			// 扫二维码
-			if (msg.what == 2000) {
-				Message message = new Message();
-				message.what = 11;
-				message.obj = Global.M01;
-				codeHandler.sendMessage(message);
-			}
-			//扫二维码
-			if (msg.what == 3000) {
-				Message message = new Message();
-				message.what = 12;
-				message.obj = Global.M04;
-				codeHandler.sendMessage(message);
-			}
-			if (msg.what == 80) {
-				//获取当前的距离信息
-				Global.M02 = "" + UltraSonic;
-				try {
-					new FileService().saveToSDCard("M02.txt", Global.M02);
-				} catch (IOException e) {
-					// TODO 自动生成的 catch 块
-					e.printStackTrace();
-				}
-				//距离 m02
-//				try {
-//					Global.M02=new FileService().read("M02.txt");
-//				} catch (IOException e) {
-//					// TODO 自动生成的 catch 块
-//					e.printStackTrace();
-//				}
-			}
-			if (msg.what == 90) {
-				//获取当前光照值
-				try {
-					new FileService().saveToSDCard(Global.M03, Light + "");
-					Toast.makeText(getBaseContext(), Light + "", Toast.LENGTH_SHORT).show();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			// 拍照车牌
-			if (msg.what == 700) {
-				savePhoto(Global.M05 + ".png");
-				myRecognizer.recognizizePicture(Environment.getExternalStorageDirectory() + "/" + Global.M05 + ".png");
-
-//					client.b = false;
-			}
-			// 拍照图形
-			if (msg.what == 800) {
-				savePhoto(Global.M07 + ".png");
-
-			}
-			//控制码 mo1
-			String m01 = null;
-			try {
-				m01 = new FileService().read(Global.M01 + ".txt");
-			} catch (IOException e) {
-				// TODO 自动生成的 catch 块
-				e.printStackTrace();
-			}
-
-			//调光档位m03
-			try {
-				Global.M03 = new FileService().read(Global.M03 + ".txt");
-			} catch (IOException e) {
-				// TODO 自动生成的 catch 块
-				e.printStackTrace();
-			}
-			//车牌号图片M05
-			Bitmap m05 = null;
-			m05 = new FileService().readPhoto(Global.M05 + ".png");
-			//图形图片M07
-			Bitmap m07 = null;
-			m07 = new FileService().readPhoto(Global.M07 + ".png");
-			if (msg.what == 10000) {
-				content.setText("控制码：" + m01 + "测得距离为:" + Global.M02 + "光强调至第" + Global.M03 + "挡" +
-					"车牌号码为：国" + m06 + "X色Y图形有Z个" + "运输目的地：XY" + "交通灯信号为:");
-				Pc1.setImageBitmap(m05);
-				Pc2.setImageBitmap(m07);
-			}
-		}
-
-		;
-	};
-
 	Handler actionHandler = new Handler() {
 		@SuppressWarnings("unused")
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case 1:
-				client.MAJOR = 0x01;
-				client.FIRST = 0x00;
-				client.SECOND = 0x00;
-				client.THRID = 0x00;
-				client.send();
-				break;
 			case 2:// 前进
 				client.MAJOR = 0x02;
 				client.FIRST = (byte) (80 & 0xFF);
@@ -708,5 +608,95 @@ public class CarActivity extends AppCompatActivity {
 			return false;
 		}
 	});
+	// 图片，位置，结果处理线程
+	public Handler phHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			if (msg.what == 10) {
+				image.setImageBitmap(bitmap);
+			}
+			if (msg.what == 15) {
+				Toast.makeText(getBaseContext(), result.toString(), Toast.LENGTH_SHORT).show();
+			}
+			// 扫二维码
+			if (msg.what == 200) {
+				Message message = new Message();
+				message.what = 11;
+				message.obj = Global.M01;
+				codeHandler.sendMessage(message);
+			}
+			//扫二维码
+			if (msg.what == 300) {
+				Message message = new Message();
+				message.what = 12;
+				message.obj = Global.M04;
+				codeHandler.sendMessage(message);
+			}
+			if (msg.what == 400) {
+				//获取当前的距离信息
+				Global.M02 = "" + UltraSonic / 10;
+				try {
+					new FileService().saveToSDCard("M02.txt", Global.M02);
+				} catch (IOException e) {
+					// TODO 自动生成的 catch 块
+					e.printStackTrace();
+				}
+			}
+			if (msg.what == 500) {
+				//获取当前光照值
+				try {
+					new FileService().saveToSDCard(Global.M03, Light + "");
+					Toast.makeText(getBaseContext(), Light + "", Toast.LENGTH_SHORT).show();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			// 拍照车牌
+			if (msg.what == 700) {
+				savePhoto(Global.M05 + ".png");
+				Global.M05 = new FileService().readPhoto(Global.M05 + ".png");
+				myRecognizer.recognizizePicture(Environment.getExternalStorageDirectory() + "/" + Global.M05 + ".png");
+			}
+			// 拍照图形
+			if (msg.what == 800) {
+				savePhoto(Global.M07 + ".png");
+				Global.M07 = new FileService().readPhoto(Global.M07 + ".png");
+			}
+			//计算从车M09和立体显示内容M10
+			if (msg.what == 801) {
+				//从车的坐标
+//				Global.M09=Global.M06+Global.M08;
+				//立体显示的内容
+				Global.M10 = Global.M06 + Global.M09;
+			}
+			//计算主车的停车坐标M13
+			if (msg.what == 802) {
+//				Global.M13=Global.M02+Global.M06+Global.M08+Global.M09;
+			}
+			//交通信号灯
+			if (msg.what == 900) {
+				savePhoto(Global.M12 + ".png");
+			}
+			//语音播报
+			if (msg.what == 1000) {
+				String src = "打开无线充电装置为指示灯供电";
+				byte[] sbyte = null;
+				try {
+					sbyte = client.bytesend(src.getBytes("GBK"));
+				} catch (UnsupportedEncodingException e) {
+					// TODO 自动生成的 catch 块
+					e.printStackTrace();
+				}
+				client.send_voice(sbyte);
+			}
+			// 结果
+			if (msg.what == 10000) {
+				content.setText("控制码：" + Global.M01 + "测得距离为:" + Global.M02 + "COM" + "光强调至第" + Global.M03 + "挡" +
+					"车牌号码为：国" + Global.M06 + "X色Y图形有" + Global.M08 + "个" + "运输目的地:" + Global.M09 + "交通灯信号为:" + Global.M12);
+				Pc1.setImageBitmap(Global.M05);
+				Pc2.setImageBitmap(Global.M07);
+			}
+		}
+	};
 
 }

@@ -1,5 +1,7 @@
 package com.exam.carrush;
 
+import android.graphics.Bitmap;
+
 public class Global {
 	public static String ENCODE1 = "nameCode1";
 	public static String ENCODE2 = "nameCode2";
@@ -9,9 +11,9 @@ public class Global {
 	public static String M02 = "距离信息";
 	public static String M03 = "调光的档位f1(M02)";
 	public static String M04 = "二维码中的‘请找出照片中X色的Y图形的数量’";
-	public static String M05 = "车牌照片";
+	public static Bitmap M05 = null;//"车牌照片";
 	public static String M06 = "车牌号码";
-	public static String M07 = "图形照片";
+	public static Bitmap M07 = null;//"图形照片";
 	public static String M08 = "答案";
 	public static String M09 = "从车停下的坐标f2(M06,M08)";
 	public static String M10 = "车牌加坐标,国XYYYXY|XY";

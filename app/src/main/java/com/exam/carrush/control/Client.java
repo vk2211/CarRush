@@ -141,6 +141,16 @@ public class Client {
 		while (mbyte[2] != 2)
 			;
 	}
+	// 前进and左转
+	public void goLeft(int sp_n) {
+		MAJOR = 0x0A;
+		FIRST = (byte) (sp_n & 0xFF);
+		SECOND = 0x00;
+		THRID = 0x00;
+		send();
+		while (mbyte[2] != 2) ;
+	}
+
 
 	// 左转45
 	public void left45() {
@@ -152,10 +162,30 @@ public class Client {
 		while (mbyte[2] != 2)
 			;
 	}
+	// 转头
+	public void head() {
+		MAJOR = 0x13;
+		FIRST = (byte) (80 & 0xFF);
+		SECOND = 0x00;
+		THRID = 0x00;
+		send();
+		while (mbyte[2] != 2)
+			;
+	}
 
 	// 右转
 	public void right(int sp_n) {
 		MAJOR = 0x05;
+		FIRST = (byte) (sp_n & 0xFF);
+		SECOND = 0x00;
+		THRID = 0x00;
+		send();
+		while (mbyte[2] != 2)
+			;
+	}
+	// 前进and右转
+	public void goRight(int sp_n) {
+		MAJOR = 0x0B;
 		FIRST = (byte) (sp_n & 0xFF);
 		SECOND = 0x00;
 		THRID = 0x00;
@@ -482,4 +512,21 @@ public class Client {
 			Log.e("###### error", e.toString());
 		}
 	}
+	//开始
+	public void STT() {
+		MAJOR = 0x0C;
+		FIRST = 0x00;
+		SECOND = 0x00;
+		THRID = 0x00;
+		send();
+	}
+	//结束
+	public void END() {
+		MAJOR = 0x0D;
+		FIRST = 0x00;
+		SECOND = 0x00;
+		THRID = 0x00;
+		send();
+	}
+
 }
