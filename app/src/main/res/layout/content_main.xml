@@ -15,6 +15,8 @@
 	tools:showIn="@layout/main">
 
 
+
+
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="60dp"
@@ -42,20 +44,20 @@
 
 	</LinearLayout>
 
-	<Button
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="识别"
-		android:id="@+id/bt_REC"
-		android:layout_alignParentBottom="true"
-		android:layout_centerHorizontal="true"
-		android:layout_marginBottom="76dp"/>
-
 	<ImageView
 		android:layout_width="300dp"
 		android:layout_height="300dp"
 		android:id="@+id/sourceImage"
 		android:layout_alignParentTop="true"
+		android:layout_centerHorizontal="true"/>
+
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="识别"
+		android:id="@+id/bt_REC"
+		android:layout_marginBottom="47dp"
+		android:layout_alignParentBottom="true"
 		android:layout_centerHorizontal="true"/>
 
 	<TextView
@@ -65,11 +67,12 @@
 		android:textSize="15sp"
 		android:textColor="#ff0000"
 		android:id="@+id/te_result"
+		android:layout_marginLeft="11dp"
+		android:layout_marginStart="11dp"
 		android:layout_above="@+id/bt_REC"
 		android:layout_alignLeft="@+id/sourceImage"
-		android:layout_alignStart="@+id/sourceImage"
-		android:layout_marginLeft="10dp"
-		android:layout_marginStart="10dp"
-		android:layout_marginBottom="14dp"/>
+		android:layout_alignStart="@+id/sourceImage"/>
+
+
 
 </RelativeLayout>

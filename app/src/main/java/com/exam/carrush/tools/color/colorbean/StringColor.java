@@ -79,6 +79,8 @@ public class StringColor {
 
 
 	public static String Critical_Number="Critical_Number";
+	public static String Small_Critical="Small_Critical";
+	public static String Big_Critical="Big_Critical";
 
 
 

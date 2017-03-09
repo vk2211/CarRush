@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.exam.carrush.tools.color.colorbean.IdentyColor;
+import com.exam.carrush.tools.color.colorbean.StringColor;
 import com.exam.carrush.tools.color.fragment.Coordinates;
 
 import java.util.ArrayList;
@@ -29,11 +30,22 @@ public class PictureReconizer {
 	String shapeResult = null;
 	int minNum = 100;
 
+	private  int UpCoordinates=0;
+	private  int DownCoordinates=0;
+	private IdentyColor mIdentyColor;
+
+	private int small_Critical=0;
+	private int big_Critical=0;
 
 	public PictureReconizer(Context context) {
 		mContext = context;
 		mBitmapList = new ArrayList<Bitmap>();
 		mResultList = new ArrayList<Bitmap>();
+		mIdentyColor=new IdentyColor(mContext);
+
+		small_Critical=mIdentyColor.getmSharedPreferences().getInt(StringColor.Small_Critical,700);
+		big_Critical=mIdentyColor.getmSharedPreferences().getInt(StringColor.Big_Critical,1100);
+
 	}
 
 	/**
@@ -66,6 +78,11 @@ public class PictureReconizer {
 
 	}
 
+
+	public IdentyColor getmIdentyColor() {
+		return mIdentyColor;
+	}
+
 	public List<Bitmap> getmResultList() {
 		return mResultList;
 	}
@@ -74,10 +91,23 @@ public class PictureReconizer {
 		return mBitmapList;
 	}
 
+	public int getUpCoordinates() {
+		return UpCoordinates;
+	}
 
+	public void setUpCoordinates(int upCoordinates) {
+		UpCoordinates = upCoordinates;
+	}
 
+	public int getDownCoordinates() {
+		return DownCoordinates;
+	}
 
-	public int  GetnumberOfshape(List<Bitmap> list,IdentyColor identyColor,int colornum,int shapenum){
+	public void setDownCoordinates(int downCoordinates) {
+		DownCoordinates = downCoordinates;
+	}
+
+	public int  GetnumberOfshape(List<Bitmap> list, IdentyColor identyColor, int colornum, int shapenum){
 
 		triaNum = 0;
 		rectNum = 0;
@@ -89,15 +119,16 @@ public class PictureReconizer {
 			ArrayList<Coordinates> listcolor=getListOf_Coordinates(list.get(i),identyColor,colornum);
 
 			Log.e("###########list size ",String.valueOf(listcolor.size()));
-			if(listcolor.size()>=13000&&listcolor.size()<17000){
+
+			if(listcolor.size()>=small_Critical&&listcolor.size()<big_Critical){
 
 				circNum++;
 			}
-			else if(listcolor.size()>=17000){
+			else if(listcolor.size()>=big_Critical){
 
 				rectNum++;
 			}
-			else if(listcolor.size()<13000){
+			else if(listcolor.size()<small_Critical){
 
 				triaNum++;
 			}
@@ -114,29 +145,6 @@ public class PictureReconizer {
 
 	}
 
-	public int getnumOfshape(List<Bitmap> list, IdentyColor identyColor, int colornum, int shapenum) {
-
-		triaNum = 0;
-		rectNum = 0;
-		circNum = 0;
-
-		for (int i = 0; i < list.size(); i++) {
-
-			Bitmap bitmap = list.get(i);
-			shapeIdentification(bitmap, identyColor, colornum);
-
-		}
-
-		if (shapenum == 0) {
-
-			return triaNum;
-		} else if (shapenum == 1) {
-			return circNum;
-		} else {
-			return rectNum;
-		}
-
-	}
 
 	public int palseColor(String colorshape) {
 
@@ -301,7 +309,7 @@ public class PictureReconizer {
 	 * @param identyColor
 	 * @return
 	 */
-	private ArrayList<Coordinates> getListOf_Coordinates(Bitmap bp, IdentyColor identyColor, int colornum) {
+	public ArrayList<Coordinates> getListOf_Coordinates(Bitmap bp, IdentyColor identyColor, int colornum) {
 
 		// // 存储图片上方坐标值
 		ArrayList<Coordinates> list = new ArrayList<Coordinates>();
@@ -396,6 +404,9 @@ public class PictureReconizer {
 	}
 
 
+
+
+
 	private Bitmap adjustPhotoRotation(Bitmap bm, final int orientationDegree) {
 		Matrix m = new Matrix();
 
@@ -485,6 +496,9 @@ public class PictureReconizer {
 	}
 
 
+
+
+
 	// 形状识别
 	private void shape(ArrayList<Coordinates> listl, ArrayList<Coordinates> listr) {
 		int indexl = listl.size();
@@ -508,4 +522,7 @@ public class PictureReconizer {
 		} else
 			Toast.makeText(mContext, "颜色识别失败，请改正算法。。。", Toast.LENGTH_SHORT).show();
 	}
+
+
+
 }

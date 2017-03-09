@@ -44,6 +44,10 @@ public class IdentyColor extends BaseColor {
 		editor = mSharedPreferences.edit();
 	}
 
+
+
+
+
 	public String getmColor() {
 		return mColor;
 	}
@@ -94,17 +98,10 @@ public class IdentyColor extends BaseColor {
 
 			if ((getmRmax() + 15 >= r && r >= getmRmin() - 15) && (getmGmax() + 15 >= g && g >= getmGmin() - 15) && (getmBmax()
 				+ 15 > b && b > getmBmin() - 15)) {
-
-
-				Log.e("#####   ********",String.valueOf(getmRmax()));
-				Log.e("#####   ********",String.valueOf(getmRmin()));
-
-
 				return true;
 			} else {
 				return false;
 			}
-
 
 		} else {
 			return false;

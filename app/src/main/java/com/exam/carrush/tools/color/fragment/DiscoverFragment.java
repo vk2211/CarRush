@@ -28,6 +28,7 @@ import com.exam.carrush.R;
 import com.exam.carrush.tools.PictureReconizer;
 import com.exam.carrush.tools.color.colorbean.ColorCutBitmap;
 import com.exam.carrush.tools.color.colorbean.IdentyColor;
+import com.exam.carrush.tools.color.colorbean.StringColor;
 import com.jude.easyrecyclerview.EasyRecyclerView;
 
 import org.w3c.dom.Text;
@@ -52,18 +53,16 @@ public class DiscoverFragment extends Fragment {
 	private TextView pick_picture04;
 	private String ImagePath;
 
+	private EditText small_Critical;
+	private EditText big_Critical;
+	private Button   bt_Color_Critical;
+
 	private Handler mHandler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
-			List<Bitmap> list = (List<Bitmap>) msg.obj;
-			for (int i = 0; i < list.size(); i++) {
-
-				ColorCutBitmap colorCutBitmap = new ColorCutBitmap();
-				colorCutBitmap.setmBitmap(list.get(i));
-				mList.add(colorCutBitmap);
-			}
-			mColorCutAdapter.addAll(mList);
+			List<ColorCutBitmap> list = (List<ColorCutBitmap>) msg.obj;
+			mColorCutAdapter.addAll(list);
 		}
 	};
 
@@ -76,6 +75,12 @@ public class DiscoverFragment extends Fragment {
 		pick_picture04=(TextView)view.findViewById(R.id.pick_picture04);
 		setImage=(ImageView)view.findViewById(R.id.setImage);
 		pick_picture04.setOnClickListener(pickOnclickListener);
+
+
+		small_Critical=(EditText)view.findViewById(R.id.small_Critical);
+		big_Critical=(EditText)view.findViewById(R.id.big_Critical);
+		bt_Color_Critical=(Button)view.findViewById(R.id.bt_Color_Critical);
+
 		mColorCutAdapter = new ColorCutAdapter(getActivity());
 		LinearLayoutManager m = new LinearLayoutManager(getActivity());
 		m.setOrientation(LinearLayoutManager.VERTICAL);
@@ -87,37 +92,92 @@ public class DiscoverFragment extends Fragment {
 		mEditText = (EditText) view.findViewById(R.id.colorEdit);
 		mBt_Cut = (Button) view.findViewById(R.id.bt_Cut);
 
-		mBt_Cut.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-
-						int num = mPictureReconizer.palseColor(mEditText.getText().toString());
-						Log.e("###########num ", String.valueOf(num));
-						IdentyColor identyColor = new IdentyColor(getContext());
-						Bitmap bitmap= mPictureReconizer.convertToBlack(bmp,identyColor,num);
-
-						mPictureReconizer.shape_first_Division(bitmap, true, identyColor, num);
-
-						List<Bitmap> list = mPictureReconizer.shape_second_Division(mPictureReconizer.getmBitmapList(), identyColor, num);
-						Message message = new Message();
-						message.obj = list;
-						mHandler.sendMessage(message);
-
-					}
-				}).start();
+		mBt_Cut.setOnClickListener(cutOnclickListener);
 
 
-			}
-		});
+		small_Critical.setText(mPictureReconizer.getmIdentyColor().getmSharedPreferences().getInt(StringColor
+			.Small_Critical,700)+"");
+		big_Critical.setText(mPictureReconizer.getmIdentyColor().getmSharedPreferences().getInt(StringColor
+			.Big_Critical,1100)+"");
+
+		bt_Color_Critical.setOnClickListener(UpdateCriticalListener);
+
 
 		mCutBitmapSetingList.setAdapter(mColorCutAdapter);
+
 		return view;
 	}
 
+
+	/**
+	 * 更新范围值
+	 */
+
+	private View.OnClickListener UpdateCriticalListener=new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+
+			int small=Integer.parseInt(small_Critical.getText().toString());
+			int big=Integer.parseInt(big_Critical.getText().toString());
+
+			mPictureReconizer.getmIdentyColor().getEditor().putInt(StringColor.Small_Critical,small);
+			mPictureReconizer.getmIdentyColor().getEditor().putInt(StringColor.Big_Critical,big);
+			mPictureReconizer.getmIdentyColor().getEditor().apply();
+
+
+		}
+	};
+
+
+
+	/**
+	 * 图形分割
+	 */
+	private View.OnClickListener cutOnclickListener=new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+
+					int num = mPictureReconizer.palseColor(mEditText.getText().toString());
+
+					Log.e("###########num ", String.valueOf(num));
+					IdentyColor identyColor = new IdentyColor(getContext());
+					Bitmap bitmap= mPictureReconizer.convertToBlack(bmp,identyColor,num);
+					mPictureReconizer.shape_first_Division(bitmap, true, identyColor, num);
+
+					ArrayList<ColorCutBitmap> listbitmap=new ArrayList<ColorCutBitmap>();
+
+
+					List<Bitmap> list = mPictureReconizer.shape_second_Division(mPictureReconizer.getmBitmapList(), identyColor, num);
+
+
+					for(int i=0;i<list.size();i++){
+
+						ColorCutBitmap colorCutBitmap=new ColorCutBitmap();
+						colorCutBitmap.setmBitmap(list.get(i));
+
+						colorCutBitmap.setAllCoordinates(mPictureReconizer.getListOf_Coordinates(list.get(i),
+							identyColor,num).size());
+
+						listbitmap.add(colorCutBitmap);
+					}
+
+
+					Message message = new Message();
+					message.obj = listbitmap;
+					mHandler.sendMessage(message);
+
+				}
+			}).start();
+
+		}
+	};
+
+	/**
+	 * 转到系统相册
+	 */
 	private View.OnClickListener pickOnclickListener=new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -127,6 +187,9 @@ public class DiscoverFragment extends Fragment {
 			startActivityForResult(intentPicture, getActivity().RESULT_FIRST_USER);
 		}
 	};
+
+
+
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {

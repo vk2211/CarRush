@@ -30,12 +30,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-<<<<<<< Updated upstream
+
 import com.aiseminar.EasyPR.ImageFileRecognizeTask;
 import com.aiseminar.EasyPR.RecognizeTask;
-=======
+
 import com.aiseminar.EasyPR.App;
->>>>>>> Stashed changes
+
 import com.bkrcl.control_car_video.camerautil.CameraCommandUtil;
 import com.exam.carrush.Global;
 import com.exam.carrush.R;

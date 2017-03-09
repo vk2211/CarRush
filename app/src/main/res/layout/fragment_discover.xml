@@ -13,18 +13,19 @@
 		android:textSize="20sp"
 		android:layout_gravity="right"/>
 
-    <ImageView
+	<ImageView
 		android:layout_width="match_parent"
-		android:layout_height="250dp"
+		android:layout_height="200dp"
 		android:src="@drawable/pic2"
 		android:id="@+id/setImage"/>
 
-    <com.jude.easyrecyclerview.EasyRecyclerView
-        android:id="@+id/colorCutList"
-        android:layout_width="match_parent"
-        android:layout_height="240dp"/>
+	<com.jude.easyrecyclerview.EasyRecyclerView
+		android:id="@+id/colorCutList"
+		android:layout_width="match_parent"
+		android:layout_height="240dp"/>
 
-    <LinearLayout
+
+	<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -36,13 +37,13 @@
             android:textSize="20sp"
             android:textColor="#eb6039"/>
 
-        <EditText
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:id="@+id/colorEdit"/>
+		<EditText
+			android:layout_width="100dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="20dp"
+			android:id="@+id/colorEdit"/>
 
-        <Button
+		<Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="分割"
@@ -51,6 +52,46 @@
 
 	</LinearLayout>
 
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="小值:"
+			android:textSize="15sp"
+			android:textColor="#eb6039"/>
+
+		<EditText
+			android:layout_width="100dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="20dp"
+			android:id="@+id/small_Critical"/>
+
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="小值:"
+			android:textSize="15sp"
+			android:textColor="#eb6039"/>
+
+		<EditText
+			android:layout_width="100dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="20dp"
+			android:id="@+id/big_Critical"/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="更新"
+			android:layout_marginLeft="30dp"
+			android:id="@+id/bt_Color_Critical"/>
+
+	</LinearLayout>
 
 
 

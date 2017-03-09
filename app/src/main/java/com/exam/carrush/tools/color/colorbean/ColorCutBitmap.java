@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 public class ColorCutBitmap {
 
 	private Bitmap mBitmap;
+	private int AllCoordinates;
+
 
 	public Bitmap getmBitmap() {
 		return mBitmap;
@@ -16,5 +18,13 @@ public class ColorCutBitmap {
 
 	public void setmBitmap(Bitmap mBitmap) {
 		this.mBitmap = mBitmap;
+	}
+
+	public int getAllCoordinates() {
+		return AllCoordinates;
+	}
+
+	public void setAllCoordinates(int allCoordinates) {
+		AllCoordinates = allCoordinates;
 	}
 }
