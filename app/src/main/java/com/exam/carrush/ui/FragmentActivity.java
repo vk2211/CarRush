@@ -76,6 +76,4 @@ public class FragmentActivity extends AppCompatActivity implements RadioGroup.On
 
 	}
 
-
-
 }

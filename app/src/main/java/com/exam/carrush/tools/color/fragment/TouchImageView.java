@@ -70,8 +70,22 @@ public class TouchImageView extends ImageView {
 		matrix = new Matrix();
 	}
 
+	public void setBitmap(String imagepath){
+
+		gintama=BitmapFactory.decodeFile(imagepath);
+		widthScreen = ScreenUtil.getScreenWidth();
+		heightScreen = ScreenUtil.getScreenHeight();
+		matrix = new Matrix();
+
+		Canvas canvas=new Canvas();
+		canvas.save();
+		canvas.drawBitmap(gintama, matrix, null);
+		canvas.restore();
+
+	}
 	protected void onDraw(Canvas canvas) {
 		canvas.save();
+
 		canvas.drawBitmap(gintama, matrix, null);
 		canvas.restore();
 	}

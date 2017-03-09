@@ -44,6 +44,7 @@
 	<string name="pai">拍照</string>
 	<string name="shape">形状识别</string>
 	<string name="ceshi">测试</string>
+	<string name="string_traffic">识别交通灯</string>
 
 
 </resources>

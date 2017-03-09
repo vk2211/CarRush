@@ -78,6 +78,11 @@ public class StringColor {
 	public static String Background_Bmin = "Background_Bmin";
 
 
+	public static String Critical_Number="Critical_Number";
+
+
+
+
 	public static String getRmax(int colornum) {
 
 
@@ -115,6 +120,7 @@ public class StringColor {
 		case 8:
 
 			return Background_Rmax;
+
 
 		default:
 			return null;
@@ -160,6 +166,7 @@ public class StringColor {
 		case 8:
 
 			return Background_Rmin;
+
 
 		default:
 			return null;
@@ -248,6 +255,9 @@ public class StringColor {
 
 			return Background_Gmin;
 
+
+
+
 		default:
 			return null;
 		}
@@ -285,6 +295,7 @@ public class StringColor {
 
 			return Background_Bmax;
 
+
 		default:
 			return null;
 		}
@@ -321,6 +332,7 @@ public class StringColor {
 		case 8:
 
 			return Background_Bmin;
+
 
 		default:
 			return null;

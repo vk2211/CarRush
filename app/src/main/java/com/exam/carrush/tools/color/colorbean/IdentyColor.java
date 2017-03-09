@@ -3,6 +3,7 @@ package com.exam.carrush.tools.color.colorbean;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.exam.carrush.tools.color.fragment.Coordinates;
 
@@ -93,6 +94,12 @@ public class IdentyColor extends BaseColor {
 
 			if ((getmRmax() + 15 >= r && r >= getmRmin() - 15) && (getmGmax() + 15 >= g && g >= getmGmin() - 15) && (getmBmax()
 				+ 15 > b && b > getmBmin() - 15)) {
+
+
+				Log.e("#####   ********",String.valueOf(getmRmax()));
+				Log.e("#####   ********",String.valueOf(getmRmin()));
+
+
 				return true;
 			} else {
 				return false;
@@ -103,6 +110,10 @@ public class IdentyColor extends BaseColor {
 			return false;
 		}
 	}
+
+
+
+
 
 
 	/**
@@ -162,9 +173,11 @@ public class IdentyColor extends BaseColor {
 	public void reset() {
 		setmRmax(0);
 		setmRmin(255);
+
 		setmGmax(0);
-		setmBmin(255);
-		setmGmax(0);
+		setmGmin(255);
+
+		setmBmax(0);
 		setmBmin(255);
 
 	}

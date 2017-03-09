@@ -112,13 +112,7 @@ public class PictureReconizer {
 			return rectNum;
 		}
 
-
-
 	}
-
-
-
-
 
 	public int getnumOfshape(List<Bitmap> list, IdentyColor identyColor, int colornum, int shapenum) {
 
@@ -178,7 +172,10 @@ public class PictureReconizer {
 
 		case "底色":
 			return 8;
-
+		case "交通红色":
+			return 9;
+		case "交通绿色":
+			return 10;
 
 		default:
 			return -1;
@@ -262,7 +259,6 @@ public class PictureReconizer {
 
 	}
 
-
 	/**
 	 * 过滤
 	 *
@@ -325,6 +321,8 @@ public class PictureReconizer {
 				 */
 				if (identyColor.isIdentyColor(r, g, b, colornum)) {
 					list.add(new Coordinates(x, y));
+
+
 				}
 			}
 		}
@@ -373,6 +371,7 @@ public class PictureReconizer {
 			}
 		}
 	}
+
 
 
 	/**

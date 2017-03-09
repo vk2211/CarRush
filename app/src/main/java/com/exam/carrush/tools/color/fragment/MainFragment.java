@@ -1,8 +1,13 @@
 package com.exam.carrush.tools.color.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,10 +37,9 @@ public class MainFragment extends Fragment {
 	private Bitmap mShotBitmap;
 	private Button bt_save;
 	private List<IdentyColor> mList;
-
-
-
-
+	private TextView pick_picture02;
+	private String ImagePath;
+	private Bitmap bitmap;
 
 
 	@Nullable
@@ -46,6 +50,10 @@ public class MainFragment extends Fragment {
 		mConfigImageView = (TouchImageView) view.findViewById(R.id.configImage);
 		mColorSettingList = (EasyRecyclerView) view.findViewById(R.id.colorSettingList);
 		mRgbText = (TextView) view.findViewById(R.id.rgbText);
+
+		pick_picture02=(TextView)view.findViewById(R.id.pick_picture02);
+		pick_picture02.setOnClickListener(pickOnclickListener);
+
 		bt_save = (Button) view.findViewById(R.id.save);
 		bt_save.setOnClickListener(saveRGBOnclickListener);
 		mConfigImageView.setOnTouchListener(onTouchListener);
@@ -54,20 +62,16 @@ public class MainFragment extends Fragment {
 		mColorSettingList.setLayoutManager(m);
 
 		mColorSettingAdapter = new ColorSettingAdapter(getActivity());
-
 		mColorSettingAdapter.setOnSettingColorListener(new ColorSettingAdapter.OnSettingColorListener() {
 			@Override
 			public void onSettingColor(boolean isSetting) {
 				mConfigImageView.enableDrag(!isSetting);
 			}
 		});
-
 		mList = initListdata();
 
 		mColorSettingAdapter.addAll(mList);
 		mColorSettingList.setAdapter(mColorSettingAdapter);
-		mConfigImageView.setImageResource(R.drawable.pic2);
-
 
 
 
@@ -76,6 +80,15 @@ public class MainFragment extends Fragment {
 	}
 
 
+	private View.OnClickListener pickOnclickListener=new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+
+			Intent intentPicture = new Intent(Intent.ACTION_PICK,
+				android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			startActivityForResult(intentPicture, getActivity().RESULT_FIRST_USER);
+		}
+	};
 
 	public TouchImageView getmConfigImageView() {
 		return mConfigImageView;
@@ -194,4 +207,28 @@ public class MainFragment extends Fragment {
 		view.destroyDrawingCache();
 		return bmp;
 	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		//获取图片路径
+		if (resultCode == Activity.RESULT_OK && data != null) {
+			Uri selectedImage = data.getData();
+			String[] filePathColumns = {MediaStore.Images.Media.DATA};
+			Cursor c = getActivity().getContentResolver().query(selectedImage, filePathColumns, null, null, null);
+			c.moveToFirst();
+			int columnIndex = c.getColumnIndex(filePathColumns[0]);
+			ImagePath = c.getString(columnIndex);
+			showImage(ImagePath);
+			c.close();
+		}
+	}
+
+	//加载图片
+	private void showImage(String imaePath){
+		bitmap = BitmapFactory.decodeFile(imaePath);
+		mConfigImageView.setBitmap(imaePath);
+
+	}
+
 }

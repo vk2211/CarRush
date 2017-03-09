@@ -30,8 +30,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+<<<<<<< Updated upstream
 import com.aiseminar.EasyPR.ImageFileRecognizeTask;
 import com.aiseminar.EasyPR.RecognizeTask;
+=======
+import com.aiseminar.EasyPR.App;
+>>>>>>> Stashed changes
 import com.bkrcl.control_car_video.camerautil.CameraCommandUtil;
 import com.exam.carrush.Global;
 import com.exam.carrush.R;
@@ -151,8 +155,12 @@ public class CarActivity extends Activity {
 		intentFilter.addAction(A_S);
 		registerReceiver(myBroadcastReceiver, intentFilter);
 
+
+
 		// 得到WiFi信息
-		wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		wifiManager = (WifiManager) getSystemService(getApplicationContext().WIFI_SERVICE);
+
+
 		// 取得服务器信息
 		dhcpInfo = wifiManager.getDhcpInfo();
 		// 取得服务器的IP地址
