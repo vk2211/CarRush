@@ -119,6 +119,14 @@ public class Client {
 		send();
 		while (mbyte[2] != 3) ;
 	}
+	public void gotest(int sp_n, int en_n) {
+		MAJOR = 0x17;
+		FIRST = (byte) (sp_n & 0xFF);
+		SECOND = (byte) (en_n & 0xff);
+		THRID = (byte) (en_n >> 8);
+		send();
+		while (mbyte[2] != 3) ;
+	}
 
 	// 后退
 	public void back(int sp_n, int en_n) {

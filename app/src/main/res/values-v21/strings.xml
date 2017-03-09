@@ -1,0 +1,50 @@
+<resources>
+	<string name="app_name">CarRush</string>
+	<string name="action_settings">RGB配置</string>
+	<string name="main_page_rb">图形配置</string>
+	<string name="discover_page_rb">分割测试</string>
+	<string name="my_page_rb">交通灯</string>
+	<string name="complete">完成</string>
+	<string name="config">配置</string>
+	<string name="reset">重置</string>
+	<string name="savedata">保存</string>
+	<string name="inputtext">颜色和形状</string>
+	<string name="pick_picture">选择图片</string>
+
+
+
+
+	<!-- 摄像头界面 -->
+	<string name="set1">设置预设位1</string>
+	<string name="set2">设置预设位2</string>
+	<string name="call1">调用预设位1</string>
+	<string name="call2">调用预设位2</string>
+	<string name="search">正在搜索。。。</string>
+	<!-- 小车控制界面 -->
+	<string name="title_activity_car">小车控制</string>
+	<string name="title">小车控制</string>
+	<string name="wave">超声波</string>
+	<string name="light">光照强度</string>
+	<string name="save">显示数据</string>
+	<string name="result">显示结果</string>
+	<string name="tracking">循迹</string>
+	<string name="quan">全自动</string>
+	<string name="back">倒车</string>
+	<string name="speed">速度档</string>
+	<string name="go">前进</string>
+	<string name="hou">后退</string>
+	<string name="car_left">左转</string>
+	<string name="car_right">右转</string>
+	<string name="stop">停车</string>
+	<string name="infrared">红外</string>
+	<string name="lamp">双色灯</string>
+	<string name="inlight">指示灯</string>
+	<string name="buzzer">蜂鸣器</string>
+	<string name="qrcode">二维码识别</string>
+	<string name="pai">拍照</string>
+	<string name="shape">形状识别</string>
+	<string name="ceshi">测试</string>
+	<string name="string_traffic">识别交通灯</string>
+
+
+</resources>

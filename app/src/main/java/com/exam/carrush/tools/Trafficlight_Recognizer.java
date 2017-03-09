@@ -2,8 +2,6 @@ package com.exam.carrush.tools;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.exam.carrush.tools.color.colorbean.IdentyColor;
 import com.exam.carrush.tools.color.colorbean.StringColor;
@@ -19,34 +17,35 @@ public class Trafficlight_Recognizer {
 
 	private Context mContext;
 
-	private int red_Rmax=255;
-	private int red_Rmin=160;
-	private int red_Gmax=60;
-	private int red_Gmin=0;
-	private int red_Bmax=100;
-	private int red_Bmin=0;
+	private int red_Rmax = 255;
+	private int red_Rmin = 160;
+	private int red_Gmax = 60;
+	private int red_Gmin = 0;
+	private int red_Bmax = 100;
+	private int red_Bmin = 0;
 
-	private int Green_Rmax=255;
-	private int Green_Rmin=100;
-	private int Green_Gmax=255;
-	private int Green_Gmin=100;
-	private int Green_Bmax=80;
-	private int Green_Bmin=0;
+	private int Green_Rmax = 255;
+	private int Green_Rmin = 100;
+	private int Green_Gmax = 255;
+	private int Green_Gmin = 100;
+	private int Green_Bmax = 80;
+	private int Green_Bmin = 0;
 
 
-	private int left_Coordinates=0;
-	private int right_Coordinates=0;
+	private int left_Coordinates = 0;
+	private int right_Coordinates = 0;
 
 	private IdentyColor mIdentyColor;
 
-	public  Trafficlight_Recognizer(Context context) {
+	public Trafficlight_Recognizer(Context context) {
 
 		mContext = context;
-		mIdentyColor=new IdentyColor(mContext);
+		mIdentyColor = new IdentyColor(mContext);
 	}
 
 	/**
 	 * 过滤图像
+	 *
 	 * @param bip
 	 * @return
 	 */
@@ -65,13 +64,12 @@ public class Trafficlight_Recognizer {
 				int g = (pixel >> 8) & 0xff;
 				int b = pixel & 0xff;
 
-				if ((r<= red_Rmax && r>= red_Rmin) &&(g<= red_Gmax && g>= red_Gmin)&&(b<= red_Bmax && b>= red_Bmin))
-				{// 红色
+				if ((r <= red_Rmax && r >= red_Rmin) && (g <= red_Gmax && g >= red_Gmin) && (b <= red_Bmax && b >= red_Bmin)) {// 红色
 					pl[offset + x] = pixel;
-				} else if ((r<= Green_Rmax && r>= Green_Rmin) &&(g<= Green_Gmax && g>= Green_Gmin)&&(b<= Green_Bmax && b>=
+				} else if ((r <= Green_Rmax && r >= Green_Rmin) && (g <= Green_Gmax && g >= Green_Gmin) && (b <= Green_Bmax && b >=
 					Green_Bmin)) {// 绿色
 					pl[offset + x] = pixel;
-				}  else {
+				} else {
 					pl[offset + x] = 0xff000000;// 黑色
 				}
 			}
@@ -114,21 +112,22 @@ public class Trafficlight_Recognizer {
 		/**
 		 * 将图像分割,
 		 */
-		Bitmap cutbitmap= Bitmap.createBitmap(bp, 100, 0, bp.getWidth()-200, bp.getHeight());
+		Bitmap cutbitmap = Bitmap.createBitmap(bp, 100, 0, bp.getWidth() - 200, bp.getHeight());
 
 		ArrayList<Coordinates> list = getListOf_Coordinates(cutbitmap);
-		Bitmap bitmap=null;
+		Bitmap bitmap = null;
 
-		bitmap = Bitmap.createBitmap(cutbitmap, list.get(50).getX(), 0, list.get(list.size()-50).getX()-list.get(50)
-			.getX(), bp.getHeight());
+		if (list.size() > 50) {
+			bitmap = Bitmap.createBitmap(cutbitmap, list.get(50).getX(), 0,
+				list.get(list.size() - 50).getX() - list.get(50).getX(), bp.getHeight());
+		}
 
 		return bitmap;
 	}
 
 
 	/**
-	 *
-	 * @param bp  ,Bitmap图像,
+	 * @param bp ,Bitmap图像,
 	 * @return
 	 */
 	private ArrayList<Coordinates> getListOf_Coordinates(Bitmap bp) {
@@ -149,13 +148,11 @@ public class Trafficlight_Recognizer {
 				/**
 				 * 将过滤的颜色添加到list集合
 				 */
-				if ((r<= red_Rmax && r>= red_Rmin) &&(g<= red_Gmax && g>= red_Gmin)&&(b<= red_Bmax && b>= red_Bmin))
-				{//红色
+				if ((r <= red_Rmax && r >= red_Rmin) && (g <= red_Gmax && g >= red_Gmin) && (b <= red_Bmax && b >= red_Bmin)) {//红色
 					list.add(new Coordinates(x, y));
 
-				}
-				else if((r<= Green_Rmax && r>= Green_Rmin) &&(g<= Green_Gmax && g>= Green_Gmin)&&(b<= Green_Bmax&&b>=
-					Green_Bmin)){//绿色
+				} else if ((r <= Green_Rmax && r >= Green_Rmin) && (g <= Green_Gmax && g >= Green_Gmin) && (b <= Green_Bmax && b >=
+					Green_Bmin)) {//绿色
 					list.add(new Coordinates(x, y));
 				}
 			}
@@ -165,23 +162,25 @@ public class Trafficlight_Recognizer {
 
 
 	/**
-	 *
-	 * @param bp   1--红色左转,2--红色右转,3--绿色左转,4--绿色右转
+	 * @param bp 1--红色左转,2--红色右转,3--绿色左转,4--绿色右转
 	 * @return
 	 */
 
-	public int shapeIdentfyTraffic(Bitmap bp){
+	public int shapeIdentfyTraffic(Bitmap bp) {
+		if (bp == null) {
+			return 0;
+		}
 
-		ArrayList<Coordinates> rlistcoorl=new ArrayList<Coordinates>();
-		ArrayList<Coordinates> rlistcoorr=new ArrayList<Coordinates>();
-		ArrayList<Coordinates> glistcoorl=new ArrayList<Coordinates>();
-		ArrayList<Coordinates> glistcoorr=new ArrayList<Coordinates>();
+		ArrayList<Coordinates> rlistcoorl = new ArrayList<Coordinates>();
+		ArrayList<Coordinates> rlistcoorr = new ArrayList<Coordinates>();
+		ArrayList<Coordinates> glistcoorl = new ArrayList<Coordinates>();
+		ArrayList<Coordinates> glistcoorr = new ArrayList<Coordinates>();
 
 
-		int critical_number=mIdentyColor.getmSharedPreferences().getInt(StringColor.Critical_Number,3000);//取临界值,默认为3000
+		int critical_number = mIdentyColor.getmSharedPreferences().getInt(StringColor.Critical_Number, 3000);//取临界值,默认为3000
 
 
-		int sort=0;
+		int sort = 0;
 		int width = bp.getWidth();
 		int height = bp.getHeight();
 		int[] pixels = new int[width * height];
@@ -195,81 +194,72 @@ public class Trafficlight_Recognizer {
 				/**
 				 * 将过滤的颜色添加到list集合
 				 */
-				if ((r<= red_Rmax && r>= red_Rmin) &&(g<= red_Gmax && g>= red_Gmin)&&(b<= red_Bmax && b>= red_Bmin))
-				{//红色
+				if ((r <= red_Rmax && r >= red_Rmin) && (g <= red_Gmax && g >= red_Gmin) && (b <= red_Bmax && b >= red_Bmin)) {//红色
 
-					if(x<width/2){
+					if (x < width / 2) {
 						rlistcoorl.add(new Coordinates(x, y));  //取左半边的点
+					} else {
+						rlistcoorr.add(new Coordinates(x, y));//取右半边的点
 					}
-					else {
-						rlistcoorr.add(new Coordinates(x,y));//取右半边的点
-					}
 
-					sort=1;
+					sort = 1;
 
-				}
-				else if((r<= Green_Rmax && r>= Green_Rmin) &&(g<= Green_Gmax && g>= Green_Gmin)&&(b<= Green_Bmax&&b>=
-					Green_Bmin)){//绿色
+				} else if ((r <= Green_Rmax && r >= Green_Rmin) && (g <= Green_Gmax && g >= Green_Gmin) && (b <= Green_Bmax && b >=
+					Green_Bmin)) {//绿色
 
-					if(x<width/2){
+					if (x < width / 2) {
 						glistcoorl.add(new Coordinates(x, y));  //取左半边的点
-					}
-					else {
-						glistcoorr.add(new Coordinates(x,y));//取右半边的点
+					} else {
+						glistcoorr.add(new Coordinates(x, y));//取右半边的点
 					}
 
-					sort=2;
+					sort = 2;
 				}
 			}
 		}
-		if(sort==1){   //红色
+		if (sort == 1) {   //红色
 
-			if(rlistcoorl.size()>rlistcoorr.size()){  //左边点比右边多,
+			if (rlistcoorl.size() > rlistcoorr.size()) {  //左边点比右边多,
 
 				setLeft_Coordinates(rlistcoorl.size());
 				setRight_Coordinates(rlistcoorr.size());
 
 				return 1;   //红色左转
-			}
-			else {
+			} else {
 
-         		setLeft_Coordinates(rlistcoorl.size());
+				setLeft_Coordinates(rlistcoorl.size());
 				setRight_Coordinates(rlistcoorr.size());
 
 				return 2;  //红色右转
 			}
 
-		}
-		else if(sort==2){//绿色
+		} else if (sort == 2) {//绿色
 
 
-			if(glistcoorl.size()>glistcoorr.size()){  //左边点比右边多,
+			if (glistcoorl.size() > glistcoorr.size()) {  //左边点比右边多,
 
-				if(glistcoorl.size()-glistcoorr.size()<critical_number){  //判断为掉头
+				if (glistcoorl.size() - glistcoorr.size() < critical_number) {  //判断为掉头
 
 					setLeft_Coordinates(glistcoorl.size());
 					setRight_Coordinates(glistcoorr.size());
 
 					return 5;
-				}
-				else {
+				} else {
 
 					setLeft_Coordinates(glistcoorl.size());
 					setRight_Coordinates(glistcoorr.size());
 
 					return 3;   //绿色左转
 				}
-			}
-			else {
+			} else {
 
-				if(glistcoorr.size()-glistcoorl.size()<critical_number){  //判断为掉头
+				if (glistcoorr.size() - glistcoorl.size() < critical_number) {  //判断为掉头
 
 
 					setLeft_Coordinates(glistcoorl.size());
 					setRight_Coordinates(glistcoorr.size());
 					return 5;
-				}
-				else {
+				} else {
 
 					setLeft_Coordinates(glistcoorl.size());
 					setRight_Coordinates(glistcoorr.size());
@@ -277,8 +267,7 @@ public class Trafficlight_Recognizer {
 					return 4;  //绿色右转
 				}
 			}
-		}
-		else {
+		} else {
 			return 6;
 		}
 
