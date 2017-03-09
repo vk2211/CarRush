@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/pick_picture03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pick_picture"
+        android:textColor="#ff0000"
+        android:textSize="20sp"
+        android:layout_gravity="right"/>
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:id="@+id/trafficImageview"/>
+
+    <TextView
+        android:id="@+id/te_traffic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="识别结果:"
+        android:textColor="#ff0000"
+        android:layout_marginTop="20dp"/>
+    <TextView
+        android:id="@+id/left_Coordinates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="左边点:"
+        android:textColor="#ff0000"
+        android:layout_marginTop="2dp"/>
+    <TextView
+        android:id="@+id/right_Coordinates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="右边点:"
+        android:textColor="#ff0000"
+        android:layout_marginTop="2dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="当前临界值:"
+            android:textColor="#ff0000"
+            android:layout_marginTop="2dp"/>
+        <EditText
+            android:id="@+id/et_critical"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            />
+        <Button
+            android:id="@+id/bt_update_critical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="更新"/>
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/bt_traffc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/string_traffic"
+        android:layout_marginTop="2dp"
+        android:layout_gravity="center"/>
+
+</LinearLayout>

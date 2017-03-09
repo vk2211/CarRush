@@ -81,6 +81,7 @@ public class StringColor {
 	public static String Critical_Number="Critical_Number";
 	public static String Small_Critical="Small_Critical";
 	public static String Big_Critical="Big_Critical";
+	public static int  light_number;
 
 
 
@@ -125,7 +126,7 @@ public class StringColor {
 
 
 		default:
-			return null;
+			return "";
 		}
 
 	}
@@ -171,7 +172,7 @@ public class StringColor {
 
 
 		default:
-			return null;
+			return "";
 		}
 	}
 
@@ -215,7 +216,7 @@ public class StringColor {
 			return Background_Gmax;
 
 		default:
-			return null;
+			return "";
 		}
 	}
 
@@ -261,7 +262,7 @@ public class StringColor {
 
 
 		default:
-			return null;
+			return "";
 		}
 	}
 
@@ -299,7 +300,7 @@ public class StringColor {
 
 
 		default:
-			return null;
+			return "";
 		}
 	}
 
@@ -337,7 +338,7 @@ public class StringColor {
 
 
 		default:
-			return null;
+			return "";
 		}
 	}
 

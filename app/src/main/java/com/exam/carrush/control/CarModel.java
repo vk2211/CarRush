@@ -61,7 +61,7 @@ public class CarModel {
 
 		void onGoBack();
 
-		void onReach(int x, int y);
+		void onReach(int x, int y, int heading);
 	}
 
 	public CarModel(int startX, int startY, int heading, CarMovementListener listener) {
@@ -87,16 +87,18 @@ public class CarModel {
 
 	public void runTo(Point p) {
 		run(mCurrentPos.x, mCurrentPos.y, p.x, p.y);
-		mCarMovementListener.onReach(p.x, p.y);
+		mCarMovementListener.onReach(mCurrentPos.x, mCurrentPos.y, mCurrentHeading);
 	}
 
 	public void runTo(int x, int y, int step) {
 //		run(mCurrentPos.x, mCurrentPos.y, x, y);
 		runRoad(mCurrentPos.x, mCurrentPos.y, x, y, step);
+		mCarMovementListener.onReach(mCurrentPos.x, mCurrentPos.y, mCurrentHeading);
 	}
 
 	public void turnTo(int to) {
 		turn(to);
+		mCarMovementListener.onReach(mCurrentPos.x, mCurrentPos.y, mCurrentHeading);
 	}
 
 	private Point findNearestMainRoadPoint(int x, int y) {
@@ -140,7 +142,7 @@ public class CarModel {
 		} else if (mCurrentHeading == R) {
 			switch (to) {
 			case L:
-				mCarMovementListener.onTurn(L, angle);
+				mCarMovementListener.onTurn(L, 180);
 				break;
 			case R:
 				break;
@@ -254,6 +256,7 @@ public class CarModel {
 					mCarMovementListener.onGoToNextCross();
 				}
 			}
+			mIsHeadOnPoint = true;
 			j = toMainY;
 			if (fromMainX < toMainX) {
 				turn(B);
@@ -291,6 +294,7 @@ public class CarModel {
 			mCurrentPos.x--;
 		}
 		mCarMovementListener.onGoBack();
+		mCarMovementListener.onReach(mCurrentPos.x, mCurrentPos.y, mCurrentHeading);
 		mIsHeadOnPoint = false;
 	}
 

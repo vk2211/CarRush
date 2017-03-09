@@ -8,17 +8,20 @@
  * @history v0.1, 2017年2月24日, by yaochuan (vk2211@163.com)
  * <p>
  * <p>
- * Copyright (C) ChinaUnicom 2017.
  ******************************************************************************/
 
 package com.exam.carrush.control;
 
+import android.content.Context;
 import android.graphics.Point;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.exam.carrush.Global;
 import com.exam.carrush.control.CarModel.CarMovementListener;
+import com.exam.carrush.tools.PictureReconizer;
+import com.exam.carrush.tools.color.colorbean.StringColor;
 
 
 public class AutoRun {
@@ -28,7 +31,7 @@ public class AutoRun {
 	private Client mCarClient;
 	private Handler mMainHandler;
 	private CarModel mCarModel;
-	private Handler mHandler = new Handler();
+	private Context mContext;
 	private CarMovementListener mCarMovementListener;
 
 	public static AutoRun get() {
@@ -40,11 +43,10 @@ public class AutoRun {
 	}
 
 	public AutoRun() {
-		mCarModel = new CarModel(8, 2, 0, mCarMovementListener = new CarMovementListener() {
+		mCarModel = new CarModel(8, 8, 0, mCarMovementListener = new CarMovementListener() {
 			@Override
 			public void onTurn(int direction, int angle) {
 				int sp = 1;
-				int i;
 				if (angle == 180) {
 					sp = 2;
 				}
@@ -52,28 +54,28 @@ public class AutoRun {
 //				mCarClient.go(80, 80);
 //				mCarClient.rest(SLEEP);
 				switch (direction) {
-					case CarModel.L: {
-						if (angle == 0) {
-							mCarClient.left(80);
-						} else {
-							if (sp == 1) mCarClient.goLeft(0);
-							if (sp == 2) mCarClient.head();
-						}
+				case CarModel.L: {
+					if (angle == 0) {
+						mCarClient.left(80);
+					} else {
+						if (sp == 1) mCarClient.goLeft(0);
+						if (sp == 2) mCarClient.head();
 					}
+				}
+				break;
+				case CarModel.T:
 					break;
-					case CarModel.T:
-						break;
-					case CarModel.R: {
-						if (angle == 0) {
-							mCarClient.right(80);
-						} else {
-							if (sp == 1) mCarClient.goRight(0);
-							if (sp == 2) mCarClient.head();
-						}
+				case CarModel.R: {
+					if (angle == 0) {
+						mCarClient.right(80);
+					} else {
+						if (sp == 1) mCarClient.goRight(0);
+						if (sp == 2) mCarClient.head();
 					}
+				}
+				break;
+				case CarModel.B:
 					break;
-					case CarModel.B:
-						break;
 				}
 			}
 
@@ -84,8 +86,11 @@ public class AutoRun {
 			}
 
 			@Override
-			public void onReach(int x, int y) {
-
+			public void onReach(int x, int y, int heading) {
+				Message msg = Message.obtain();
+				msg.what = 1100;
+				msg.obj = new CarStatus(x, y, heading);
+				mMainHandler.sendMessage(msg);
 			}
 
 			@Override
@@ -108,34 +113,41 @@ public class AutoRun {
 		return this;
 	}
 
+
+	public AutoRun setContext(Context context) {
+		mContext = context;
+		return this;
+	}
+
 	private Runnable runnable = new Runnable() {
 
 		@Override
 		public void run() {
 			//开始任务 ***计时器道闸打开***
 			new PrepareTask().excute();
+			//车牌识别
+			new PlateTask().excute();
 			//二维码识别 ***获取信息进行处理m01***
 			new ORCTask().excute();
+			//隧道任务或报警器任务
+			new TunnelTask().excute();
 			//测距任务  ***获取当前距离信息在数码管显示m02***
 			new MeasureTask().excute();
 			//灯照任务  ***调挡或计算当前档位f1(m02)***
 			new LightControlTask().excute();
-			//车牌识别
-			new PlateTask().excute();
-			//隧道任务或报警器任务
-			new TunnelTask().excute();
-			//主从控制从车任务 ***计算出从车的的位置并让从车行驶到该位置***
+			//测试任务
+			new TempTask().excute();
+			//立体显示任务 ***识别的车牌信息和从车的位置在立体显示上显示***
+			new HoloTask().excute();
+			//交通灯识别任务 ***识别当前信息并执行***
+			new TrafficLightsTask().excute();
+//			//主从控制从车任务 ***计算出从车的的位置并让从车行驶到该位置***
 			new SlaveTask().excute();
-//			//立体显示任务 ***识别的车牌信息和从车的位置在立体显示上显示***
-//			new HoloTask().excute();
-//			//交通灯识别任务 ***识别当前信息并执行***
-//			new TrafficLightsTask().excute();
-//			//入库任务   ***计算出小车的停止位置并入库***
+////			//入库任务   ***计算出小车的停止位置并入库***
+////			new EndTask().excute();
+////
+//
 //			new EndTask().excute();
-//			//测试任务
-//			new TempTask().excute();
-
-			new EndTask().excute();
 		}
 	};
 
@@ -177,7 +189,7 @@ public class AutoRun {
 //			mCarClient.digital_dic(0);
 //			mCarClient.rest(SLEEP * 5);
 			mCarClient.STT();
-			mCarClient.rest(SLEEP*5);
+			mCarClient.rest(SLEEP * 20);
 		}
 
 		@Override
@@ -185,16 +197,18 @@ public class AutoRun {
 		}
 
 	}
+
 	//二维码识别任务
 	class ORCTask extends Task {
 		@Override
 		protected void before() {
-			mCarModel.runTo(new Point(8, 6));
+			mCarModel.runTo(new Point(8, 2));
 		}
 
 		@Override
 		protected void exe() {
-
+			mCarClient.rest(SLEEP * 15);
+			mMainHandler.sendEmptyMessage(300);
 		}
 
 		@Override
@@ -203,36 +217,67 @@ public class AutoRun {
 
 		}
 	}
-
 
 
 	//测距
 	class MeasureTask extends Task {
 		@Override
 		protected void before() {
-			mCarModel.runTo(new Point(8, 8));
-//			mCarModel.turnTo(CarModel.T);
+			mCarModel.runTo(new Point(3, 4));
+			mCarModel.turnTo(CarModel.T);
 //			mCarModel.back();
+			mCarClient.back(80, 80);
+//			mCarClient.line(80);
+//			mCarClient.goRight(0);
+			mCarClient.go(80, 80);
+			mCarClient.rest(SLEEP * 5);
+//			new CarModel(8, 8, 1, mCarMovementListener);
 //			mCarModel.runTo(new Point(3, 4));
+
 		}
 
 		@Override
 		protected void exe() {
-//			//保存当时距离信息
-//			mMainHandler.sendEmptyMessage(80);
-//			mCarClient.rest(SLEEP * 30);
-//			//在数码管显示距离信息
-//			mCarClient.digital_dic(Integer.parseInt(Global.M02));
-//			mCarClient.rest(SLEEP * 10);
+
+			mMainHandler.sendEmptyMessage(400);
+			//保存当时距离信息
+			mCarClient.rest(SLEEP * 5);
+
+			//在数码管显示距离信息
+
+		}
+
+		@Override
+		protected void after() {
+
+		}
+	}
+
+	//灯照任务
+	class LightControlTask extends Task {
+		@Override
+		protected void before() {
+			mCarModel.runTo(new Point(2, 6));
+		}
+
+		@Override
+		protected void exe() {
+			mCarClient.gear(1);
+			Log.e("灯", "1111");
+			mCarClient.rest(SLEEP * 20);
+			mCarClient.gear(2);
+			mCarClient.rest(SLEEP * 20);
+			// control light
 		}
 
 		@Override
 		protected void after() {
 			mCarModel.back();
 		}
+
 	}
-    //灯照任务
-	class LightControlTask extends Task {
+
+	class TempTask extends Task {
 		@Override
 		protected void before() {
 			mCarModel.runTo(new Point(2, 8));
@@ -240,42 +285,44 @@ public class AutoRun {
 
 		@Override
 		protected void exe() {
-//			mCarClient.gear(1);
-//			Log.e("灯", "1111");
-//			mCarClient.rest(SLEEP * 20);
-//			mCarClient.gear(2);
-//			mCarClient.rest(SLEEP * 20);
-//			// control light
+
 		}
 
 		@Override
 		protected void after() {
 			mCarModel.back();
-		}
 
+		}
 	}
-    //立体显示任务
+
+	//立体显示任务
 	class HoloTask extends Task {
 		@Override
 		protected void before() {
-			mCarClient.go(80, 80);
+//			mCarClient.go(80, 80);
 			mCarModel.runTo(new Point(5, 6));
-			mCarModel.turnTo(CarModel.T);
-			mCarClient.rest(SLEEP * 20);
+			mCarModel.turnTo(CarModel.L);
+//			mCarClient.rest(SLEEP * 20);
 		}
 
 		@Override
 		protected void exe() {
-			mCarClient.left45();
+//			mCarClient.go(80, 80);
+			mCarClient.right45();
 			mCarClient.rest(SLEEP * 10);
-			display("abcd1234");
+			display(Global.M06 + "A4");
 			mCarClient.rest(SLEEP * 30);
+
+//			mCarClient.left45();
+//			mCarClient.rest(SLEEP * 10);
+//			display("abcd1234");
+//			mCarClient.rest(SLEEP * 30);
 		}
 
 		@Override
 		protected void after() {
-			mCarClient.right(80);
-			mCarClient.rest(SLEEP);
+//			mCarClient.rest(SLEEP);
+			mCarClient.left(80);
 		}
 
 		private void display(String str) {
@@ -310,51 +357,59 @@ public class AutoRun {
 		}
 
 	}
-    //隧道任务
+
+	//隧道任务
 	class TunnelTask extends Task {
 		@Override
 		protected void before() {
-
+			mCarModel.runTo(new Point(2, 2));
 		}
 
 		@Override
 		protected void exe() {
-
+			mCarClient.infrared((byte) 0x03, (byte) 0x05, (byte) 0x14,
+				(byte) 0x45, (byte) 0xDE, (byte) 0x92);
+			mCarClient.rest(SLEEP * 15);
 		}
 
 		@Override
 		protected void after() {
-
+			mCarModel.back();
 		}
 	}
-    //车牌识别任务
+
+	//车牌识别任务
 	class PlateTask extends Task {
 		@Override
 		protected void before() {
-
+			mCarModel.runTo(new Point(8, 4));
 		}
 
 		@Override
 		protected void exe() {
-
-
+			mCarClient.rest(SLEEP * 15);
+			mMainHandler.sendEmptyMessage(700);
 		}
 
 		@Override
 		protected void after() {
-
+			mCarModel.back();
 		}
 	}
-    //图形识别任务
+
+	//图形识别任务
 	class ShapeTask extends Task {
 		@Override
 		protected void before() {
-
+			mCarModel.runTo(new Point(8, 4));
+			mCarClient.picture(1);
 		}
 
 		@Override
 		protected void exe() {
-
+			mMainHandler.sendEmptyMessage(800);
+			mCarClient.rest(SLEEP * 5);
+			Global.M08 = new PictureReconizer(mContext).getRecognizer(Global.M01, Global.M07);
 		}
 
 		@Override
@@ -362,6 +417,7 @@ public class AutoRun {
 
 		}
 	}
+
 	//主车控制从车任务
 	class SlaveTask extends Task {
 		CarModel mOtherCar;
@@ -369,12 +425,12 @@ public class AutoRun {
 		@Override
 		protected void before() {
 			mCarClient.deputy(1);
-			mOtherCar = new CarModel(5, 4, CarModel.L, mCarMovementListener);
+			mOtherCar = new CarModel(5, 4, CarModel.R, mCarMovementListener);
 		}
 
 		@Override
 		protected void exe() {
-			mOtherCar.runTo(new Point(9, 9));
+			mOtherCar.runTo(new Point(9, 8));
 		}
 
 		@Override
@@ -384,14 +440,26 @@ public class AutoRun {
 	}
 
 	//交通灯识别任务
-	class TrafficLightsTask extends Task{
+	class TrafficLightsTask extends Task {
 		@Override
 		protected void before() {
-
+			mCarModel.runTo(new Point(7, 6));
 		}
 
 		@Override
 		protected void exe() {
+			mCarClient.rest(SLEEP * 5);
+			mMainHandler.sendEmptyMessage(900);
+			mCarClient.rest(SLEEP * 5);
+			if (StringColor.light_number == 1 || StringColor.light_number == 4) {
+				mCarClient.goRight(0);
+			}
+			if (StringColor.light_number == 2 || StringColor.light_number == 3) {
+				mCarClient.goLeft(0);
+			}
+			if (StringColor.light_number == 5) {
+				mCarClient.head();
+			}
 
 		}
 
@@ -400,24 +468,25 @@ public class AutoRun {
 
 		}
 	}
-    //入库任务
+
+	//入库任务
 	class EndTask extends Task {
 
 		@Override
 		protected void before() {
-			if(Global.M13.equals("B2")){
+			if (Global.M13.equals("B2")) {
 				mCarModel.runTo(new Point(2, 2));
 			}
-			if (Global.M13.equals("D2")){
+			if (Global.M13.equals("D2")) {
 				mCarModel.runTo(new Point(2, 4));
 			}
-			if (Global.M13.equals("F2")){
+			if (Global.M13.equals("F2")) {
 				mCarModel.runTo(new Point(2, 6));
 			}
-			if (Global.M13.equals("H2")){
+			if (Global.M13.equals("H2")) {
 				mCarModel.runTo(new Point(2, 8));
 			}
-			if (Global.M13.equals("J2")){
+			if (Global.M13.equals("J2")) {
 				mCarModel.runTo(new Point(2, 10));
 			}
 		}
@@ -425,8 +494,8 @@ public class AutoRun {
 		@Override
 		protected void exe() {
 
-			mCarClient.go(80,80);
-			mCarClient.rest(SLEEP*2);
+			mCarClient.go(80, 80);
+			mCarClient.rest(SLEEP * 2);
 			mCarClient.END();
 		}
 
@@ -435,7 +504,6 @@ public class AutoRun {
 
 		}
 	}
-
 
 
 }

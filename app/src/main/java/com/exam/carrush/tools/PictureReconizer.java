@@ -72,7 +72,7 @@ public class PictureReconizer {
 			numbershape=GetnumberOfshape(mResultList,identyColor,num[0],num[1]);
 
 		} else {
-			Toast.makeText(mContext, "请配置RGB", Toast.LENGTH_SHORT).show();
+		//	Toast.makeText(mContext, "请配置RGB", Toast.LENGTH_SHORT).show();
 		}
 		return numbershape;
 
@@ -519,8 +519,9 @@ public class PictureReconizer {
 				rectNum++;
 			}
 
-		} else
-			Toast.makeText(mContext, "颜色识别失败，请改正算法。。。", Toast.LENGTH_SHORT).show();
+		} else {
+			//	Toast.makeText(mContext, "颜色识别失败，请改正算法。。。", Toast.LENGTH_SHORT).show();
+		}
 	}
 
 

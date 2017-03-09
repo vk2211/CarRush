@@ -1,6 +1,5 @@
 package com.exam.carrush.ui;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -18,6 +17,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StrictMode;
+import android.support.v7.app.AppCompatActivity;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -30,21 +30,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.aiseminar.EasyPR.ImageFileRecognizeTask;
 import com.aiseminar.EasyPR.RecognizeTask;
-
-import com.aiseminar.EasyPR.App;
-
 import com.bkrcl.control_car_video.camerautil.CameraCommandUtil;
 import com.exam.carrush.Global;
 import com.exam.carrush.R;
 import com.exam.carrush.control.AutoClient;
 import com.exam.carrush.control.AutoRun;
 import com.exam.carrush.control.CameraThread;
+import com.exam.carrush.control.CarStatus;
 import com.exam.carrush.service.FileService;
 import com.exam.carrush.service.SearchService;
 import com.exam.carrush.tools.RGBLuminanceSource;
+import com.exam.carrush.tools.Trafficlight_Recognizer;
+import com.exam.carrush.tools.color.colorbean.StringColor;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
 import com.google.zxing.DecodeHintType;
@@ -60,8 +59,9 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class CarActivity extends Activity {
-
+public class CarActivity extends AppCompatActivity {
+	//交通灯识别调用类
+	private Trafficlight_Recognizer mTrafficlight_recognizer;
 	//车牌识别调用类
 	private ImageFileRecognizeTask myRecognizer;
 	private RecognizeTask.OnReconizeListener onReconizeListener = new RecognizeTask.OnReconizeListener() {
@@ -90,7 +90,7 @@ public class CarActivity extends Activity {
 	private byte[] mByte = new byte[10];
 	// 接受传感器
 	long psStatus = 0;
-	long UltraSonic = 0;
+	int UltraSonic = 0;
 	long Light = 0;
 	long CodedDisk = 0;
 	// 指示灯与LED标签
@@ -137,6 +137,8 @@ public class CarActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		//车牌识别类实例化
 		myRecognizer = new ImageFileRecognizeTask(CarActivity.this, onReconizeListener);
+		//交通灯识别类实例化
+		mTrafficlight_recognizer = new Trafficlight_Recognizer(CarActivity.this);
 		super.onCreate(savedInstanceState);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -155,12 +157,8 @@ public class CarActivity extends Activity {
 		intentFilter.addAction(A_S);
 		registerReceiver(myBroadcastReceiver, intentFilter);
 
-
-
 		// 得到WiFi信息
-		wifiManager = (WifiManager) getSystemService(getApplicationContext().WIFI_SERVICE);
-
-
+		wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 		// 取得服务器信息
 		dhcpInfo = wifiManager.getDhcpInfo();
 		// 取得服务器的IP地址
@@ -270,7 +268,7 @@ public class CarActivity extends Activity {
 	}
 
 
-	private Bitmap bitmap = null;
+	//	private Bitmap bitmap = null;
 	// 开启线程接受摄像头当前图片
 	private CameraThread phThread;// = new CameraThread(phHandler, IP);
 //	private Thread phThread = new Thread(new Runnable() {
@@ -429,7 +427,7 @@ public class CarActivity extends Activity {
 			switch (v.getId()) {
 			// 全自动
 			case R.id.quan:
-				AutoRun.get().setClient(client).setHandler(phHandler).start();
+				AutoRun.get().setClient(client).setHandler(phHandler).setContext(CarActivity.this).start();
 
 //				mAutoRun=AutoRun.get();
 //				mAutoRun.start();
@@ -458,8 +456,10 @@ public class CarActivity extends Activity {
 							} else if (which == 4) {// 车牌识别
 								phHandler.sendEmptyMessage(700);
 							} else if (which == 5) {// 图形识别
+								client.digital_dic(100);
 
 							} else if (which == 6) {// 交通信号灯识别
+								display(Global.M06);
 
 							} else if (which == 7) {// 照明档位测量
 								phHandler.sendEmptyMessage(90);
@@ -494,10 +494,42 @@ public class CarActivity extends Activity {
 		}
 	}
 
+	private void display(String str) {
+		short[] li = StringToBytes(str);
+		short[] data = new short[5];
+		data[0] = 0x20;
+		data[1] = (short) (li[0]);
+		data[2] = (short) (li[1]);
+		data[3] = (short) (li[2]);
+		data[4] = (short) (li[3]);
+		client.infrared_stereo(data);
+		data[0] = 0x10;
+		data[1] = (short) (li[4]);
+		data[2] = (short) (li[5]);
+		data[3] = (short) (li[6]);
+		data[4] = (short) (li[7]);
+		client.infrared_stereo(data);
+	}
+
+	private short[] StringToBytes(String licString) {
+		if (licString == null || licString.equals("")) {
+			return null;
+		}
+		licString = licString.toUpperCase();
+		int length = licString.length();
+		char[] hexChars = licString.toCharArray();
+		short[] d = new short[length];
+		for (int i = 0; i < length; i++) {
+			d[i] = (short) hexChars[i];
+		}
+		return d;
+	}
+
+
 	// 拍照
 	private void savePhoto(String name) {
 		// new FileService().savePhoto(convertToGrayscale(bitmap), name);
-		new FileService().savePhoto(bitmap, name);
+		new FileService().savePhoto(phThread.bitmap, name);
 	}
 
 	// 二维码解析
@@ -516,7 +548,7 @@ public class CarActivity extends Activity {
 					public void run() {
 						Map<DecodeHintType, String> hints = new HashMap<DecodeHintType, String>();
 						hints.put(DecodeHintType.CHARACTER_SET, "utf-8");
-						RGBLuminanceSource source = new RGBLuminanceSource(bitmap);
+						RGBLuminanceSource source = new RGBLuminanceSource(phThread.bitmap);
 						BinaryBitmap bitmap1 = new BinaryBitmap(new HybridBinarizer(source));
 						QRCodeReader reader = new QRCodeReader();
 
@@ -533,7 +565,7 @@ public class CarActivity extends Activity {
 									phHandler.sendEmptyMessage(15);
 								// 二维码5成功
 								try {
-									new FileService().savePhoto(bitmap, nameCode + ".png");
+									new FileService().savePhoto(phThread.bitmap, nameCode + ".png");
 									new FileService().saveToSDCard(nameCode + ".txt", result.toString());
 
 								} catch (IOException e) {
@@ -641,13 +673,14 @@ public class CarActivity extends Activity {
 			}
 			if (msg.what == 400) {
 				//获取当前的距离信息
-				Global.M02 = "" + UltraSonic / 10;
-				try {
-					new FileService().saveToSDCard("M02.txt", Global.M02);
-				} catch (IOException e) {
-					// TODO 自动生成的 catch 块
-					e.printStackTrace();
-				}
+//				Global.M02_int = UltraSonic/10;
+				client.digital_dic(UltraSonic);
+//				try {
+//					new FileService().saveToSDCard("M02.txt", Global.M02_int+"");
+//				} catch (IOException e) {
+//					// TODO 自动生成的 catch 块
+//					e.printStackTrace();
+//				}
 			}
 			if (msg.what == 500) {
 				//获取当前光照值
@@ -661,14 +694,16 @@ public class CarActivity extends Activity {
 			}
 			// 拍照车牌
 			if (msg.what == 700) {
-				savePhoto(Global.M05 + ".png");
-				Global.M05 = new FileService().readPhoto(Global.M05 + ".png");
-				myRecognizer.recognizizePicture(Environment.getExternalStorageDirectory() + "/" + Global.M05 + ".png");
+				savePhoto(Global.M05_string);
+				Global.M05 = new FileService().readPhoto(Global.M05_string);
+				myRecognizer.recognizizePicture(Environment.getExternalStorageDirectory() + "/" + Global.M05_string);
+
+
 			}
 			// 拍照图形
 			if (msg.what == 800) {
-				savePhoto(Global.M07 + ".png");
-				Global.M07 = new FileService().readPhoto(Global.M07 + ".png");
+				savePhoto("M07.png");
+				Global.M07 = new FileService().readPhoto("M07.png");
 			}
 			//计算从车M09和立体显示内容M10
 			if (msg.what == 801) {
@@ -683,7 +718,31 @@ public class CarActivity extends Activity {
 			}
 			//交通信号灯
 			if (msg.what == 900) {
-				savePhoto(Global.M12 + ".png");
+				savePhoto("M12.png");
+				Bitmap sourceBitmap = new FileService().readPhoto("M12.png");
+
+				Bitmap fileterBitmap = mTrafficlight_recognizer.convertToBlack(sourceBitmap);
+				Bitmap mBmp = mTrafficlight_recognizer.shape_first_Division(fileterBitmap);
+				StringColor.light_number = mTrafficlight_recognizer.shapeIdentfyTraffic(mBmp);
+				Log.e("#####" + StringColor.light_number, "");
+				/**
+				 *  1--红色左转，2--红色右转，3--绿色左转，4--绿色右转，5--掉头，6--出错
+				 */
+				if (StringColor.light_number == 1 || StringColor.light_number == 4) {
+					Global.M12 = "右转";
+					Toast.makeText(getBaseContext(), Global.M12, Toast.LENGTH_SHORT).show();
+
+				}
+				if (StringColor.light_number == 2 || StringColor.light_number == 3) {
+					Global.M12 = "左转";
+					Toast.makeText(getBaseContext(), Global.M12, Toast.LENGTH_SHORT).show();
+				}
+				if (StringColor.light_number == 5) {
+					Global.M12 = "掉头";
+					Toast.makeText(getBaseContext(), Global.M12, Toast.LENGTH_SHORT).show();
+				}
+
+
 			}
 			//语音播报
 			if (msg.what == 1000) {
@@ -696,6 +755,10 @@ public class CarActivity extends Activity {
 					e.printStackTrace();
 				}
 				client.send_voice(sbyte);
+			}
+			if (msg.what == 1100) {
+				CarStatus cs = (CarStatus) msg.obj;
+				content.setText("x=" + cs.x + ",y=" + cs.y + ",h=" + cs.head);
 			}
 			// 结果
 			if (msg.what == 10000) {
