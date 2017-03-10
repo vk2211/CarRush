@@ -14,15 +14,20 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.exam.carrush.R;
 import com.exam.carrush.tools.PictureReconizer;
@@ -55,7 +60,11 @@ public class DiscoverFragment extends Fragment {
 
 	private EditText small_Critical;
 	private EditText big_Critical;
+	private EditText middle_Critical;
 	private Button   bt_Color_Critical;
+	private Spinner  mSpinner;
+	private List<String> patten_list=new ArrayList<String>();
+	private ArrayAdapter<String> adapter;
 
 	private Handler mHandler = new Handler() {
 
@@ -75,10 +84,14 @@ public class DiscoverFragment extends Fragment {
 		pick_picture04=(TextView)view.findViewById(R.id.pick_picture04);
 		setImage=(ImageView)view.findViewById(R.id.setImage);
 		pick_picture04.setOnClickListener(pickOnclickListener);
-
+		mSpinner=(Spinner)view.findViewById(R.id.sp_patten);
+		initSpinner();  //初始化Spinner
+		mSpinner.setAdapter(adapter);//设置适配器
+		mSpinner.setOnItemSelectedListener(selectListener);
 
 		small_Critical=(EditText)view.findViewById(R.id.small_Critical);
 		big_Critical=(EditText)view.findViewById(R.id.big_Critical);
+		middle_Critical=(EditText)view.findViewById(R.id.middle_Critical);
 		bt_Color_Critical=(Button)view.findViewById(R.id.bt_Color_Critical);
 
 		mColorCutAdapter = new ColorCutAdapter(getActivity());
@@ -99,6 +112,8 @@ public class DiscoverFragment extends Fragment {
 			.Small_Critical,700)+"");
 		big_Critical.setText(mPictureReconizer.getmIdentyColor().getmSharedPreferences().getInt(StringColor
 			.Big_Critical,1100)+"");
+		middle_Critical.setText(mPictureReconizer.getmIdentyColor().getmSharedPreferences().getInt(StringColor
+		.Middle_Critical,900)+"");
 
 		bt_Color_Critical.setOnClickListener(UpdateCriticalListener);
 
@@ -108,6 +123,29 @@ public class DiscoverFragment extends Fragment {
 		return view;
 	}
 
+
+	private void initSpinner(){
+
+		patten_list.add("模式选择");
+		patten_list.add("三种颜色");
+		patten_list.add("四种颜色");
+		adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_item, patten_list);
+		//第三步：为适配器设置下拉列表下拉时的菜单样式。
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+	}
+
+	private AdapterView.OnItemSelectedListener selectListener=new AdapterView.OnItemSelectedListener() {
+		@Override
+		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+			StringColor.Model_Number=position;
+		}
+		@Override
+		public void onNothingSelected(AdapterView<?> parent) {
+
+		}
+	};
 
 	/**
 	 * 更新范围值
@@ -119,12 +157,12 @@ public class DiscoverFragment extends Fragment {
 
 			int small=Integer.parseInt(small_Critical.getText().toString());
 			int big=Integer.parseInt(big_Critical.getText().toString());
+			int middle=Integer.parseInt(middle_Critical.getText().toString());
 
 			mPictureReconizer.getmIdentyColor().getEditor().putInt(StringColor.Small_Critical,small);
 			mPictureReconizer.getmIdentyColor().getEditor().putInt(StringColor.Big_Critical,big);
+			mPictureReconizer.getmIdentyColor().getEditor().putInt(StringColor.Middle_Critical,middle);
 			mPictureReconizer.getmIdentyColor().getEditor().apply();
-
-
 		}
 	};
 

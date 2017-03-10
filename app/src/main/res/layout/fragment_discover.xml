@@ -22,8 +22,7 @@
 	<com.jude.easyrecyclerview.EasyRecyclerView
 		android:id="@+id/colorCutList"
 		android:layout_width="match_parent"
-		android:layout_height="240dp"/>
-
+		android:layout_height="200dp"/>
 
 	<LinearLayout
         android:layout_width="match_parent"
@@ -50,6 +49,12 @@
             android:layout_marginLeft="30dp"
             android:id="@+id/bt_Cut"/>
 
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="更新"
+			android:layout_marginLeft="30dp"
+			android:id="@+id/bt_Color_Critical"/>
 	</LinearLayout>
 
 	<LinearLayout
@@ -65,34 +70,55 @@
 			android:textColor="#eb6039"/>
 
 		<EditText
-			android:layout_width="100dp"
+			android:layout_width="60dp"
 			android:layout_height="wrap_content"
 			android:layout_marginLeft="20dp"
 			android:id="@+id/small_Critical"/>
-
-
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="小值:"
+			android:text="中值:"
 			android:textSize="15sp"
 			android:textColor="#eb6039"/>
 
 		<EditText
-			android:layout_width="100dp"
+			android:layout_width="60dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="20dp"
+			android:id="@+id/middle_Critical"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="大值:"
+			android:textSize="15sp"
+			android:textColor="#eb6039"/>
+
+		<EditText
+			android:layout_width="60dp"
 			android:layout_height="wrap_content"
 			android:layout_marginLeft="20dp"
 			android:id="@+id/big_Critical"/>
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
 
-		<Button
+		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="更新"
-			android:layout_marginLeft="30dp"
-			android:id="@+id/bt_Color_Critical"/>
+			android:text="模式选择:"
+			android:textSize="15sp"
+			android:textColor="#eb6039"/>
+
+		<Spinner
+			android:id="@+id/sp_patten"
+			android:layout_width="150dp"
+			android:layout_height="30dp">
+		</Spinner>
 
 	</LinearLayout>
-
 
 
 </LinearLayout>

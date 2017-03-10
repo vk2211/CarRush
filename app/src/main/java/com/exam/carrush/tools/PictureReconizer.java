@@ -19,11 +19,11 @@ import java.util.List;
 
 public class PictureReconizer {
 
-
 	private Context mContext;
 	private int rectNum = 0;//矩形
 	private int triaNum = 0;//三角形
 	private int circNum = 0;//圆形
+	private int rhombusNum=0;//菱形
 	private List<Bitmap> mBitmapList, mResultList;
 	private int[] location_X = new int[512];
 	private int index1 = 0;
@@ -36,6 +36,7 @@ public class PictureReconizer {
 
 	private int small_Critical=0;
 	private int big_Critical=0;
+	private int middle_Critical=0;
 
 	public PictureReconizer(Context context) {
 		mContext = context;
@@ -45,6 +46,8 @@ public class PictureReconizer {
 
 		small_Critical=mIdentyColor.getmSharedPreferences().getInt(StringColor.Small_Critical,700);
 		big_Critical=mIdentyColor.getmSharedPreferences().getInt(StringColor.Big_Critical,1100);
+		middle_Critical=mIdentyColor.getmSharedPreferences().getInt(StringColor.Middle_Critical,900);
+
 
 	}
 
@@ -69,7 +72,7 @@ public class PictureReconizer {
 			shape_second_Division(mBitmapList, identyColor, num[0]);//第二次形状分割
 			//numbershape = getnumOfshape(mResultList, identyColor, num[0], num[1]);  //进行识别
 
-			numbershape=GetnumberOfshape(mResultList,identyColor,num[0],num[1]);
+			numbershape=GetnumberOfshape(mResultList,identyColor,num[0],num[1]); //进行识别
 
 		} else {
 		//	Toast.makeText(mContext, "请配置RGB", Toast.LENGTH_SHORT).show();
@@ -109,41 +112,101 @@ public class PictureReconizer {
 
 	public int  GetnumberOfshape(List<Bitmap> list, IdentyColor identyColor, int colornum, int shapenum){
 
-		triaNum = 0;
-		rectNum = 0;
-		circNum = 0;
+		triaNum = 0;  //三角形
+		rectNum = 0;  //矩形
+		circNum = 0;  //圆形
+		rhombusNum=0;//菱形
 
+		if(StringColor.Model_Number==2){ //模式二，四种颜色
 
-		for(int i=0;i<list.size();i++){
+			Accumate_Coordinates_FourColor(list,identyColor,colornum);
 
-			ArrayList<Coordinates> listcolor=getListOf_Coordinates(list.get(i),identyColor,colornum);
+		}
+		else{   //模式一，只有三种颜色
+			Accumate_Coordinates_ThreeColor(list,identyColor,colornum);
+		}
 
-			Log.e("###########list size ",String.valueOf(listcolor.size()));
+		if (shapenum == 0) {
+			return triaNum;
+		}
+		else if (shapenum == 1) {
 
-			if(listcolor.size()>=small_Critical&&listcolor.size()<big_Critical){
+			return circNum;
+		}
+		else if(shapenum==2){
+			return rectNum;
+		}
+		else if(shapenum==3)
+		{
+			return rhombusNum;
+		}
+		else {
 
-				circNum++;
-			}
-			else if(listcolor.size()>=big_Critical){
+			return 0;
+		}
+	}
 
-				rectNum++;
-			}
-			else if(listcolor.size()<small_Critical){
+	/**
+	 *当识别三种颜色时调用
+	 */
+	private void Accumate_Coordinates_ThreeColor(List<Bitmap> list,IdentyColor identyColor, int colornum){
+		for(int i=0;i<list.size();i++) {
+
+			ArrayList<Coordinates> listcolor = getListOf_Coordinates(list.get(i), identyColor, colornum);
+
+			Log.e("###########list size ", String.valueOf(listcolor.size()));
+			/**
+			 * 第一个区间，三角形
+			 */
+			if (listcolor.size() < small_Critical) {
 
 				triaNum++;
 			}
+			/**
+			 * 第二个区间，圆形
+			 */
+			else if (listcolor.size() < big_Critical && listcolor.size() >= small_Critical) {
 
-		}
-		if (shapenum == 0) {
-
-			return triaNum;
-		} else if (shapenum == 1) {
-			return circNum;
-		} else {
-			return rectNum;
+				circNum++;
+			}
+			/**
+			 * 第三个区间，矩形
+			 */
+			else if (listcolor.size() >= big_Critical) {
+				rectNum++;
+			}
 		}
 
 	}
+
+	/**
+	 *识别四种颜色时调用
+	 */
+	private void Accumate_Coordinates_FourColor(List<Bitmap> list,IdentyColor identyColor, int colornum){
+		for(int i=0;i<list.size();i++) {
+
+			ArrayList<Coordinates> listcolor = getListOf_Coordinates(list.get(i), identyColor, colornum);
+
+			Log.e("###########list size ", String.valueOf(listcolor.size()));
+			/**
+			 * 第一个区间，三角形
+			 */if (listcolor.size() < small_Critical) {
+				triaNum++;
+			}/*** 第二个区间，菱形
+			 */else if (listcolor.size() >= small_Critical && listcolor.size() < middle_Critical) {
+				rhombusNum++;
+			}/**
+			 * 第三个区间，圆形
+			 */else if (listcolor.size() < big_Critical && listcolor.size() >= middle_Critical) {
+				circNum++;
+			}/**
+			 * 第四个区间，矩形
+			 */else if (listcolor.size() >= big_Critical) {
+				rectNum++;
+			}
+		}
+	}
+
 
 
 	public int palseColor(String colorshape) {
@@ -180,14 +243,9 @@ public class PictureReconizer {
 
 		case "底色":
 			return 8;
-		case "交通红色":
-			return 9;
-		case "交通绿色":
-			return 10;
 
-		default:
+			default:
 			return -1;
-
 		}
 	}
 
@@ -197,7 +255,6 @@ public class PictureReconizer {
 		int[] num = new int[2];
 		String color = colorshape.substring(0, 2);
 		String shape = colorshape.substring(2, colorshape.length());
-
 
 		/**
 		 * 颜色命令解析
@@ -254,17 +311,15 @@ public class PictureReconizer {
 			break;
 		case "矩形":
 			num[1] = 2;
-
+			case "菱形":
+				num[1] = 3;
 			break;
 
 		default:
 			num[1] = -1;
 			break;
-
 		}
-
 		return num;
-
 	}
 
 	/**
